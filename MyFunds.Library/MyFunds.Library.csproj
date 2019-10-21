@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MyFunds.Data\MyFunds.Data.csproj" />
-    <ProjectReference Include="..\MyFunds.Library\MyFunds.Library.csproj" />
   </ItemGroup>
 
 </Project>
