@@ -29,14 +29,14 @@ namespace MyFunds.Controllers
         [Route("GetUser/{userId}")]
         public IActionResult GetUser(int userId)
         {
-            return Ok(userService.GetUserWithAssets(userId));
+            return Ok(userService.GetUser(userId));
         }
 
         [HttpGet]
         [Route("GetAllUsers")]
         public IActionResult GetAllUsers(int userId)
         {
-            return Ok(userService.GetAllUsersWithAssets());
+            return Ok(userService.GetAllUsers());
         }
     }
 }
