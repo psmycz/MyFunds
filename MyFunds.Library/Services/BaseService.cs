@@ -1,4 +1,5 @@
-﻿using MyFunds.Library.Interfaces;
+﻿using AutoMapper;
+using MyFunds.Library.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,14 @@ namespace MyFunds.Library.Services
     {
         // TODO: add logger like this one
         //
-        //protected readonly ILogger<TService> _logger;
-        //public BaseService(ILogger<TService> logger)
-        //{
-        //    _logger = logger;
-        //}
+        protected readonly IMapper mapper;
+
+
+        public BaseService(IMapper mapper)
+        {
+            this.mapper = mapper;
+        }
+
+
     }
 }

@@ -26,6 +26,10 @@ namespace MyFunds.Data.Repositories
             return Table.Any(u => u.UserName == username);
         }
 
+        public bool UserWithEmailExist(string email)
+        {
+            return Table.Any(u => u.Email == email);
+        }
 
     }
 }

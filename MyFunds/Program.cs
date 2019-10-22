@@ -14,6 +14,8 @@ namespace MyFunds
     {
         public static void Main(string[] args)
         {
+            Console.Title = "MyFunds";
+
             CreateWebHostBuilder(args).Build().Run();
         }
 
