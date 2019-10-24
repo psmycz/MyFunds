@@ -2,8 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityModel;
 using IdentityServer4.Models;
+using IdentityServer4.Test;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace MyFunds.IdentityServer
 {
@@ -22,7 +25,7 @@ namespace MyFunds.IdentityServer
                 new ApiResource("MyFundsApi")
                 {
                     ApiSecrets = { new Secret ("ApiSecret".Sha256())}
-                } 
+                }
             };
         
         public static IEnumerable<Client> Clients =>
@@ -38,9 +41,13 @@ namespace MyFunds.IdentityServer
                     {
                         new Secret("ClientSecret".Sha256())
                     },
+
                     AllowedScopes = { "MyFundsApi" }
                 }
             };
+
+
+
         
     }
 }

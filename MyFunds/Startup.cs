@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
+using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -60,17 +63,32 @@ namespace MyFunds
                     options.Password.RequireNonAlphanumeric = false;
                 })
                 .AddEntityFrameworkStores<MyFundsDbContext>();
+            
 
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
                     options.Authority = Configuration["IdentityServerAddress"];
                     options.RequireHttpsMetadata = false;
 
                     options.Audience = "MyFundsApi";
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnTokenValidated = context =>
+                        {
+                            const string claimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+                            if (!context.Principal.HasClaim(c => c.Type == claimType))
+                            {
+                                context.Fail($"The claim '{claimType}' is not present in the token.");
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
+
             services.AddMvc();
+
 
             // controller with [ApiController] attribute does auto validation for ModelState, here custom error response
             services.Configure<ApiBehaviorOptions>(options =>
@@ -126,10 +144,6 @@ namespace MyFunds
                 app.UseDeveloperExceptionPage();
             }
 
-
-            app.UseAuthentication();
-
-
             app.UseExceptionHandler(errorApp =>
             {
                 errorApp.Run(context => 
@@ -173,7 +187,7 @@ namespace MyFunds
                 });
             });
 
-
+            app.UseAuthentication();
 
             app.UseMvc();
 

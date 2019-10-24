@@ -49,7 +49,6 @@ namespace MyFunds.Controllers
                 Email = registerRequest.Email
             };
 
-
             var result = await userManager.CreateAsync(user, registerRequest.Password);
             if (result.Succeeded)
             {

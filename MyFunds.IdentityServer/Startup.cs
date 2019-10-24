@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyFunds.Data.DatabaseContexts;
 using MyFunds.Data.Models;
+using MyFunds.IdentityServer.Extensions;
 
 namespace MyFunds.IdentityServer
 {
@@ -38,10 +39,12 @@ namespace MyFunds.IdentityServer
 
 
             var builder = services.AddIdentityServer()
+                .AddInMemoryPersistedGrants()
                 .AddInMemoryIdentityResources(Config.Ids)
                 .AddInMemoryApiResources(Config.Apis)
                 .AddInMemoryClients(Config.Clients)
-                .AddAspNetIdentity<User>();
+                .AddAspNetIdentity<User>()
+                .AddProfileService<ProfileService>();
             
             // TODO: add certificate
             // not recommended for production - you need to store your key material somewhere secure
