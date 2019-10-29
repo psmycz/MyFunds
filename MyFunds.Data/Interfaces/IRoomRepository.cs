@@ -8,6 +8,6 @@ namespace MyFunds.Data.Interfaces
 {
     public interface IRoomRepository : IBaseRepository<Room>
     {
-
+        bool RoomExist(int roomId);
     }
 }

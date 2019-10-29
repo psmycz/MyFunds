@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace MyFunds.Library.Interfaces
 {
-    public interface IFixedAssetService
+    public interface IMobileAssetService
     {
-        FixedAssetDTO Create(FixedAssetDTO fixedAssetDTO);  
+        MobileAssetDTO Create(MobileAssetDTO mobileAssetDTO);
     }
 }

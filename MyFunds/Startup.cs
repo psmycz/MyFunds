@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using IdentityServer4.AccessTokenValidation;
@@ -28,6 +29,7 @@ using MyFunds.Extensions;
 using MyFunds.Filters;
 using MyFunds.Library.Interfaces;
 using MyFunds.Library.Services;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace MyFunds
@@ -76,7 +78,7 @@ namespace MyFunds
                     {
                         OnTokenValidated = context =>
                         {
-                            const string claimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+                            const string claimType = ClaimTypes.Role; // => "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"; 
                             if (!context.Principal.HasClaim(c => c.Type == claimType))
                             {
                                 context.Fail($"The claim '{claimType}' is not present in the token.");
@@ -87,7 +89,8 @@ namespace MyFunds
                 });
 
 
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions(options => options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore);
 
 
             // controller with [ApiController] attribute does auto validation for ModelState, here custom error response
@@ -106,6 +109,7 @@ namespace MyFunds
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IFixedAssetService, FixedAssetService>();
+            services.AddScoped<IMobileAssetService, MobileAssetService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRoomService, RoomService>();
 

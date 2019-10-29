@@ -4,5 +4,10 @@
         <name>MyFunds</name>
     </assembly>
     <members>
+        <member name="F:MyFunds.ViewModels.FixedAssetRequest.type">
+            <summary>
+            If type != Rentable then cannot be assigned to user/InUse
+            </summary>
+        </member>
     </members>
 </doc>

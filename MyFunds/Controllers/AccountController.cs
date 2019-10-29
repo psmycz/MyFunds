@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyFunds.Data.Models;
+using MyFunds.Enumerators;
 using MyFunds.Exceptions;
 using MyFunds.Filters;
 using MyFunds.Library.Exceptions;
@@ -10,6 +11,7 @@ using MyFunds.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MyFunds.Controllers
@@ -17,7 +19,7 @@ namespace MyFunds.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [ServiceFilter(typeof(ApiExceptionFilter))]
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Role.User)]
     public class AccountController : ControllerBase
     {
         readonly UserManager<User> userManager;
@@ -52,7 +54,18 @@ namespace MyFunds.Controllers
             var result = await userManager.CreateAsync(user, registerRequest.Password);
             if (result.Succeeded)
             {
-                return Ok();
+                var newUser = await userManager.FindByNameAsync(user.UserName);
+                var addClaimsResult = await userManager.AddClaimAsync(newUser, new Claim("role", Role.User));
+
+                if (addClaimsResult.Succeeded)
+                {
+                    return Ok(); 
+                }
+                else
+                {
+                    await userManager.DeleteAsync(newUser);
+                    throw new ApiException("An error occured while adding claims to user - user creation was canceled");
+                }
             }
             else
             {

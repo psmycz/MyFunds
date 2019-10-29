@@ -7,5 +7,6 @@ namespace MyFunds.Library.Interfaces
 {
     public interface IRoomService
     {
+        bool RoomExist(int roomId);
     }
 }

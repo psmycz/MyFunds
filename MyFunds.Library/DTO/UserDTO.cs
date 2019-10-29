@@ -13,7 +13,7 @@ namespace MyFunds.Library.DTO
         public string Email { get; set; }
 
 
-        public List<FixedAsset> FixedAssets { get; set; }
-        public List<MobileAsset> MobileAssets { get; set; }
+        public List<FixedAssetDTO> FixedAssets { get; set; }
+        public List<MobileAssetDTO> MobileAssets { get; set; }
     }
 }

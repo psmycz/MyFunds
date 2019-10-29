@@ -18,5 +18,9 @@ namespace MyFunds.Library.Services
             this.roomRepository = roomRepository;
         }
 
+        public bool RoomExist(int roomId)
+        {
+            return roomRepository.RoomExist(roomId);
+        }
     }
 }
