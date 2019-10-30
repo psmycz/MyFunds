@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace MyFunds.Library.MappingProfiles
 {
-    public class UserMappingProfiles : Profile
+    public class RoomMappingProfile : Profile
     {
-        public UserMappingProfiles()
+        public RoomMappingProfile()
         {
-            CreateMap<User, UserDTO>().ForMember(destination => destination.Id, u => u.MapFrom(src => src.Id));
+            CreateMap<Room, RoomDTO>();
         }
     }
 }

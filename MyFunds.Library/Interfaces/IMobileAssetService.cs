@@ -8,6 +8,8 @@ namespace MyFunds.Library.Interfaces
 {
     public interface IMobileAssetService
     {
+        MobileAssetDTO GetMobileAsset(int mobileAssetId);
+        List<MobileAssetDTO> GetAllMobileAssets();
         MobileAssetDTO Create(MobileAssetDTO mobileAssetDTO);
     }
 }

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using MyFunds.Data.Models;
 using MyFunds.Exceptions;
 using MyFunds.Filters;
@@ -29,15 +31,20 @@ namespace MyFunds.Controllers
         readonly IFixedAssetService fixedAssetService;
         readonly IMobileAssetService mobileAssetService;
         readonly IRoomService roomService;
+        readonly LinkGenerator linkGenerator;
+        readonly IMapper mapper;
 
-        public UserController(IUserService userService, UserManager<User> userManager, IFixedAssetService fixedAssetService, IMobileAssetService mobileAssetService, IRoomService roomService)
+        public UserController(IUserService userService, UserManager<User> userManager, IFixedAssetService fixedAssetService, IMobileAssetService mobileAssetService, IRoomService roomService, LinkGenerator linkGenerator, IMapper mapper)
         {
             this.userService = userService;
             this.userManager = userManager;
             this.fixedAssetService = fixedAssetService;
             this.mobileAssetService = mobileAssetService;
             this.roomService = roomService;
+            this.linkGenerator = linkGenerator;
+            this.mapper = mapper;
         }
+
 
         // admin only?
         [HttpGet]
@@ -46,14 +53,56 @@ namespace MyFunds.Controllers
         {
             return Ok(userService.GetUser(userId));
         }
+        [HttpGet]
+        [Route("GetUserWithAssets/{userId}")]
+        public IActionResult GetUserWithAssets(int userId)
+        {
+            return Ok(userService.GetUserWithAssets(userId));
+        }
+
 
         // admin only?
         [HttpGet]
         [Route("GetAllUsers")]
-        public IActionResult GetAllUsers(int userId)
+        public IActionResult GetAllUsers()
         {
             return Ok(userService.GetAllUsers());
         }
+        [HttpGet]
+        [Route("GetAllUsersWithAssets")]
+        public IActionResult GetAllUsersWithAssets()
+        {
+            return Ok(userService.GetAllUsersWithAssets());
+        }
+
+
+        [HttpGet]
+        [Route("GetFixedAsset/{fixedAssetId}")]
+        public IActionResult GetFixedAsset(int fixedAssetId)
+        {
+            return Ok(fixedAssetService.GetFixedAsset(fixedAssetId));
+        }
+        [HttpGet]
+        [Route("GetAllFixedAssets")]
+        public IActionResult GetAllFixedAssets()
+        {
+            return Ok(fixedAssetService.GetAllFixedAssets());
+        }
+
+
+        [HttpGet]
+        [Route("GetMobileAsset/{mobileAssetId}")]
+        public IActionResult GetMobileAsset(int mobileAssetId)
+        {
+            return Ok(mobileAssetService.GetMobileAsset(mobileAssetId));
+        }
+        [HttpGet]
+        [Route("GetAllMobileAssets")]
+        public IActionResult GetAllMobileAssets()
+        {
+            return Ok(mobileAssetService.GetAllMobileAssets());
+        }
+
 
         [HttpGet]
         [Route("GetMe")]
@@ -106,24 +155,12 @@ namespace MyFunds.Controllers
             }
 
 
-
-            // FixedAssetRequest to FixedAssetDTO convert
-            var fixedAssetDTO = new FixedAssetDTO()
-            {
-                Name = fixedAsset.Name,
-                InUse = fixedAsset.InUse,
-                Price = fixedAsset.Price,
-                PurchaseDate = fixedAsset.PurchaseDate.ToUniversalTime(),
-                WarrantyEndDate = fixedAsset.WarrantyEndDate.ToUniversalTime(),
-                Type = Enum.Parse<FixedAssetType>(fixedAsset.Type),
-                RoomId = fixedAsset.RoomId,
-                UserId = fixedAsset.UserId
-            };
-
+            var fixedAssetDTO = mapper.Map<FixedAssetDTO>(fixedAsset);
             var newAsset = fixedAssetService.Create(fixedAssetDTO);
 
-            //return Created($"/FixedAsset/{newAsset.Id}", newAsset);
-            return Ok(newAsset);
+
+            var link = linkGenerator.GetUriByAction(HttpContext, "GetFixedAsset", "User", values: new { fixedAssetId = newAsset.Id });
+            return Created(link, newAsset);
         }
 
         [HttpPost]
@@ -151,22 +188,13 @@ namespace MyFunds.Controllers
                 return new ValidationProblemDetailsResult();
             }
 
-            // FixedAssetRequest to FixedAssetDTO convert
-            var mobileAssetDTO = new MobileAssetDTO()
-            {
-                Name = mobileAsset.Name,
-                InUse = mobileAsset.InUse,
-                Price = mobileAsset.Price,
-                PurchaseDate = mobileAsset.PurchaseDate.ToUniversalTime(),
-                WarrantyEndDate = mobileAsset.WarrantyEndDate.ToUniversalTime(),
-                UserId = mobileAsset.UserId
-            };
 
+            var mobileAssetDTO = mapper.Map<MobileAssetDTO>(mobileAsset);
             var newAsset = mobileAssetService.Create(mobileAssetDTO);
 
-            //return Created($"/MobileAsset/{newAsset.Id}", newAsset);
 
-            return Ok(newAsset);
+            var link = linkGenerator.GetUriByAction(HttpContext, "GetMobileAsset", "User", values: new { mobileAssetId = newAsset.Id });
+            return Created(link, newAsset);
         }
     }
 }

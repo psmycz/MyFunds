@@ -38,7 +38,7 @@ namespace MyFunds.Exceptions
                 Title = "Request Validation Error",
                 Status = 400,
                 Detail = details,
-                Instance = $"urn:TrackMe:badrequest:{Guid.NewGuid()}",
+                Instance = $"urn:MyFunds:badrequest:{Guid.NewGuid()}",
                 ValidationErrors = errors
             };
 

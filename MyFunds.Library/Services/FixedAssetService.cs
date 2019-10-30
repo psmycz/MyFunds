@@ -42,53 +42,40 @@ namespace MyFunds.Library.Services
 
 
 
-            var fixedAsset = new FixedAsset()
-            {
-                Name = fixedAssetDTO.Name,
-                InUse = fixedAssetDTO.InUse,
-                Price = fixedAssetDTO.Price,
-                PurchaseDate = fixedAssetDTO.PurchaseDate,
-                WarrantyEndDate = fixedAssetDTO.WarrantyEndDate,
-                Type = fixedAssetDTO.Type,
-                RoomId = fixedAssetDTO.RoomId,
-                UserId = fixedAssetDTO.UserId
-            };
+            var fixedAsset = mapper.Map<FixedAsset>(fixedAssetDTO);
 
             var newFixedAsset = fixedAssetRepository.Insert(fixedAsset);
             fixedAssetRepository.Save();
 
+            // to get missing data 
+            roomRepository.GetById(newFixedAsset.RoomId);
+            userRepository.GetById(newFixedAsset.UserId);
 
-
-            var room = roomRepository.GetById(newFixedAsset.RoomId);
-            var user = userRepository.GetById(newFixedAsset.UserId);
-
-            fixedAssetDTO.Id = newFixedAsset.Id;
-            fixedAssetDTO.Room = new RoomDTO()
-            {
-                Id = room.Id,
-                BuildingId = room.BuildingId,
-                Area = room.Area,
-                Floor = room.Floor,
-                Type = room.Type,
-                Building = room.Building
-            };
-            fixedAssetDTO.User = new UserDTO()
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email
-            };
+            fixedAssetDTO = mapper.Map<FixedAssetDTO>(newFixedAsset);
             
             return fixedAssetDTO;
         }
 
+        public FixedAssetDTO GetFixedAsset(int fixedAssetId)
+        {
+            if (fixedAssetId <= 0)
+                throw new ApiException("Incorrect Id");
+
+            var fixedAsset = fixedAssetRepository.GetById(fixedAssetId);
+            
+            var fixedAssetDTO = mapper.Map<FixedAssetDTO>(fixedAsset ?? throw new NoDataException("No fixed asset with provided Id"));
+            
+            return fixedAssetDTO;
+        }
         // TODO:
         // add auto mapper
-        public List<FixedAsset> GetAll()
+        public List<FixedAssetDTO> GetAllFixedAssets()
         {
             var allAssets = fixedAssetRepository.GetAll().ToList();
 
-            return allAssets;
+            var allAssetsDTO = mapper.Map<List<FixedAssetDTO>>(allAssets ?? throw new NoDataException("No registered mobile assets"));
+
+            return allAssetsDTO;
         }
     }
 }

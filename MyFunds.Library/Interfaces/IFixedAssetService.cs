@@ -8,6 +8,8 @@ namespace MyFunds.Library.Interfaces
 {
     public interface IFixedAssetService
     {
+        FixedAssetDTO GetFixedAsset(int fixedAssetId);
+        List<FixedAssetDTO> GetAllFixedAssets();
         FixedAssetDTO Create(FixedAssetDTO fixedAssetDTO);  
     }
 }

@@ -29,31 +29,41 @@ namespace MyFunds.Library.Services
 
         public List<UserDTO> GetAllUsers()
         {
-            var users = userRepository.GetAll().Select(u => new UserDTO { Id = u.Id, UserName = u.UserName, Email = u.Email }).ToList();
+            var users = userRepository.GetAll().Select(u => new UserDTO 
+            {
+                Id = u.Id, 
+                UserName = u.UserName, 
+                Email = u.Email 
+            }).ToList();
 
-            return users;
+            return users ?? throw new NoDataException("No registered users");
         }
 
         public List<UserDTO> GetAllUsersWithAssets()
         {
             var users = userRepository.GetAll();
 
-            // TODO: Fix cuz doesnt work xd
-            return mapper.Map<List<UserDTO>>(users);
+            return mapper.Map<List<UserDTO>>(users ?? throw new NoDataException("No registered users"));
         }
 
         public UserDTO GetUser(int userId)
         {
+            if (userId <= 0)
+                throw new ApiException("Incorrect Id");
+
             var user = userRepository.GetById(userId);
             
-            return user == null ? throw new ApiException("No user with provided Id") : new UserDTO { Id = user.Id, Email = user.Email, UserName = user.UserName };
+            return user == null ? throw new NoDataException("No user with provided Id") : new UserDTO { Id = user.Id, Email = user.Email, UserName = user.UserName };
         }
 
         public UserDTO GetUserWithAssets(int userId)
         {
-            var user = userRepository.GetById(userId);
+            if (userId <= 0)
+                throw new ApiException("Incorrect Id");
 
-            return user == null ? throw new ApiException("No user with provided Id") : mapper.Map<UserDTO>(user);
+            var user = userRepository.GetById(userId);
+            
+            return user == null ? throw new NoDataException("No user with provided Id") : mapper.Map<UserDTO>(user);
         }
 
         public bool UserExist(int userId)

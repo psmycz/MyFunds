@@ -28,6 +28,7 @@ using MyFunds.Exceptions;
 using MyFunds.Extensions;
 using MyFunds.Filters;
 using MyFunds.Library.Interfaces;
+using MyFunds.Library.MappingProfiles;
 using MyFunds.Library.Services;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
@@ -116,8 +117,12 @@ namespace MyFunds
             services.AddScoped<ApiExceptionFilter>();
 
 
+            // need assembly where namespace MappingProfiles is declared and its declared in different project so need that .dll file
+            // TODO: change if found better way to do this
+            // will be necessary to add other project assembly's when creating profiles in them
+            services.AddAutoMapper(Assembly.GetEntryAssembly(), Assembly.LoadFrom(Assembly.GetEntryAssembly().Location.Replace("MyFunds.dll", "MyFunds.Library.dll")));
 
-            services.AddAutoMapper(Assembly.GetEntryAssembly());
+
 
             services.AddSwaggerGen(c =>
             {
@@ -157,7 +162,7 @@ namespace MyFunds
 
                     var problemDetails = new ProblemDetails
                     {
-                        Instance = $"urn:TrackMe:error:{Guid.NewGuid()}"
+                        Instance = $"urn:MyFunds:error:{Guid.NewGuid()}"
                     };
                     if (exception is BadHttpRequestException badHttpRequestException)
                     {

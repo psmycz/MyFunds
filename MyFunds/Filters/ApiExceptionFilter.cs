@@ -28,7 +28,7 @@ namespace MyFunds.Filters
                     Title = "Unauthorized Access",
                     Status = 401,
                     Detail = "The instance value should be used to identify the problem when calling customer support",
-                    Instance = $"urn:TrackMe:unauthorised:{Guid.NewGuid()}"
+                    Instance = $"urn:MyFunds:unauthorised:{Guid.NewGuid()}"
                 };
                 context.HttpContext.Response.StatusCode = 401;
                 context.HttpContext.Response.WriteJson(problemDetails, "application/problem+json");
@@ -45,13 +45,31 @@ namespace MyFunds.Filters
                     Status = 400,
                     Detail = $"{ex.Message}" +
                     " - The instance value should be used to identify the problem when calling customer support",
-                    Instance = $"urn:TrackMe:badrequest:{Guid.NewGuid()}"
+                    Instance = $"urn:MyFunds:badrequest:{Guid.NewGuid()}"
                 };
                 context.HttpContext.Response.StatusCode = 400;
                 context.HttpContext.Response.WriteJson(problemDetails, "application/problem+json");
 
                 LogError(problemDetails, context);
             }
+
+            else if (context.Exception is NoDataException)
+            {
+                var ex = context.Exception as NoDataException;
+                ProblemDetails problemDetails = new ProblemDetails
+                {
+                    Title = "Unable to return requested data",
+                    Status = 404,
+                    Detail = $"{ex.Message}" +
+                    " - The instance value should be used to identify the problem when calling customer support",
+                    Instance = $"urn:MyFunds:notfound:{Guid.NewGuid()}"
+                };
+                context.HttpContext.Response.StatusCode = 404;
+                context.HttpContext.Response.WriteJson(problemDetails, "application/problem+json");
+
+                LogError(problemDetails, context);
+            }
+
 
             base.OnException(context);
         }
