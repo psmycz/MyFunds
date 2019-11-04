@@ -17,11 +17,11 @@ namespace MyFunds.Data.Models
         public virtual ICollection<FixedAsset> FixedAssets { get; set; }
         
         [JsonIgnore]
-        public virtual ICollection<FixedAssetArchive> FixedAssetArchives { get; }
+        public virtual ICollection<FixedAssetArchive> FixedAssetArchives { get; set; }
 
         public virtual ICollection<MobileAsset> MobileAssets { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<MobileAssetArchive> MobileAssetArchives { get; }
+        public virtual ICollection<MobileAssetArchive> MobileAssetArchives { get; set; }
     }
 }

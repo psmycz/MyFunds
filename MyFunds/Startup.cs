@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -110,7 +111,9 @@ namespace MyFunds
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IFixedAssetService, FixedAssetService>();
+            services.AddScoped<IFixedAssetArchiveService, FixedAssetArchiveService>();
             services.AddScoped<IMobileAssetService, MobileAssetService>();
+            services.AddScoped<IMobileAssetArchiveService, MobileAssetArchiveService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRoomService, RoomService>();
 
@@ -170,7 +173,13 @@ namespace MyFunds
                         problemDetails.Status = badHttpRequestException.StatusCode;
                         problemDetails.Detail = badHttpRequestException.Message;
                     }
-                    else
+                    else if (exception.GetBaseException() is SocketException socketException)
+                    {
+                        problemDetails.Title = "Server Error";
+                        problemDetails.Status = 500;
+                        problemDetails.Detail = $"{socketException.Message} - The instance value should be used to identify the problem when calling customer support";
+                    }
+                    else 
                     {
                         problemDetails.Title = "An unexpected error occurred!";
                         problemDetails.Status = 500;

@@ -12,8 +12,13 @@ namespace MyFunds.Data.Repositories
     {
         public FixedAssetRepository(MyFundsDbContext context)
            : base(context)
-        {
+        { 
         }
     
+
+        public bool FixedAssetExist(int fixedAssetId)
+        {
+            return Table.Any(fa => fa.Id == fixedAssetId);
+        }
     }
 }

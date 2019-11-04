@@ -8,6 +8,6 @@ namespace MyFunds.Data.Interfaces
 {
     public interface IMobileAssetRepository : IBaseRepository<MobileAsset>
     {
-
+        bool MobileAssetExist(int mobileAssetId);
     }
 }

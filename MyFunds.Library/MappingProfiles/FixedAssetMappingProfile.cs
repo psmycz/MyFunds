@@ -20,7 +20,9 @@ namespace MyFunds.Library.MappingProfiles
                     Id = src.User.Id,
                     UserName = src.User.UserName,
                     Email = src.User.Email,
-                }));
+                }))
+                .ForMember(dest => dest.PreviousFixedAsset, opt => opt.Ignore())
+                .ForMember(dest => dest.FixedAssetArchives, opt => opt.Ignore());
         }
     }
 }

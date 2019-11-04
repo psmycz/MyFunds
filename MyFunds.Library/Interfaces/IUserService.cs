@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyFunds.Library.Interfaces
 {
-    public interface IUserService
+    public interface IUserService : IBaseService<IUserService>
     {
         UserDTO GetUser(int userId);
         UserDTO GetUserWithAssets(int userId);

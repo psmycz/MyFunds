@@ -12,6 +12,7 @@ namespace MyFunds.Data.Interfaces
         IQueryable<TEntity> Get(Expression<Func<TEntity, bool>> predicate);
         TEntity GetById(int id);
         TEntity Insert(TEntity entity);
+        void Detach(TEntity entity);
         TEntity Update(TEntity entity);
         void Delete(int id);
         void Save();

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MyFunds.Library.Interfaces
 {
-    public interface IRoomService
+    public interface IRoomService : IBaseService<IRoomService>
     {
         bool RoomExist(int roomId);
     }

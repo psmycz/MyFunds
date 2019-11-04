@@ -10,7 +10,7 @@ namespace MyFunds.Data.Models
     public class FixedAssetArchive
     {
         [Key]
-        new public int Id { get; set; }
+        public int Id { get; set; }
 
 
         public bool InUse { get; set; }
@@ -18,7 +18,7 @@ namespace MyFunds.Data.Models
         public double Price { get; set; }
         public DateTime PurchaseDate { get; set; }
         public DateTime WarrantyEndDate { get; set; }
-        public enum Type { Undefined, Static, Rentable }
+        public FixedAssetType Type { get; set; }
         [Required]
         public DateTime TimeStamp { get; set; }
 

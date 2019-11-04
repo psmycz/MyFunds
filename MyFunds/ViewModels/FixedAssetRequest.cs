@@ -9,6 +9,8 @@ namespace MyFunds.ViewModels
 {
     public class FixedAssetRequest
     {
+        public int Id { get; set; }
+
         [Required]
         public bool InUse { get; set; }
 

@@ -1,30 +1,28 @@
-﻿using AutoMapper.Configuration.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyFunds.Library.DTO
 {
-    public class MobileAssetDTO
+    public class MobileAssetArchiveDTO
     {
         public int Id { get; set; }
 
 
-        public string Name { get; set; }
         public bool InUse { get; set; }
+        public string Name { get; set; }
         public double Price { get; set; }
         public DateTime PurchaseDate { get; set; }
         public DateTime WarrantyEndDate { get; set; }
+        public DateTime TimeStamp { get; set; }
 
 
         public int UserId { get; set; }
         public UserDTO User { get; set; }
 
 
-        [Ignore]
-        public MobileAssetArchiveDTO PreviousMobileAsset { get; set; }
-        [Ignore]
-        public List<MobileAssetArchiveDTO> MobileAssetArchives { get; set; }
+        public int MobileAssetId { get; set; }
+        public MobileAssetDTO MobileAsset { get; set; }
     }
 }

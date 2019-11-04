@@ -47,6 +47,11 @@ namespace MyFunds.Data.Repositories
             Context.SaveChanges();
         }
 
+        public void Detach(TEntity entity)
+        {
+            Context.Entry(entity).State = EntityState.Detached;
+        }
+
         public TEntity Update(TEntity entity)
         {
             Table.Attach(entity);

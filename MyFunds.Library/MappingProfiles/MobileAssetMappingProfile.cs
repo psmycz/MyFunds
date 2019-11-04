@@ -20,7 +20,9 @@ namespace MyFunds.Library.MappingProfiles
                     Id = src.User.Id,
                     Email = src.User.Email,
                     UserName = src.User.UserName
-                }));
+                }))
+                .ForMember(dest => dest.PreviousMobileAsset, opt => opt.Ignore())
+                .ForMember(dest => dest.MobileAssetArchives, opt => opt.Ignore());
         }
     }
 }
