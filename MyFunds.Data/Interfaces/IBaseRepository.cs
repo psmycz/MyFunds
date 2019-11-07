@@ -8,6 +8,7 @@ namespace MyFunds.Data.Interfaces
 {
     public interface IBaseRepository<TEntity> where TEntity : class
     {
+        bool Exist(Expression<Func<TEntity, bool>> predicate);
         IQueryable<TEntity> GetAll();
         IQueryable<TEntity> Get(Expression<Func<TEntity, bool>> predicate);
         TEntity GetById(int id);

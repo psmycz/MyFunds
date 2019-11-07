@@ -1,4 +1,5 @@
-﻿using MyFunds.Data.Models;
+﻿using AutoMapper.Configuration.Annotations;
+using MyFunds.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,5 +26,9 @@ namespace MyFunds.Library.DTO
 
         public int BuildingId { get; set; }
         public Building Building { get; set; }
+
+        [Ignore]
+        public List<FixedAssetDTO> FixedAssets{ get; set; }
+
     }
 }

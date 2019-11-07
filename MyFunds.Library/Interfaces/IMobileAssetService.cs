@@ -10,6 +10,7 @@ namespace MyFunds.Library.Interfaces
     {
         bool MobileAssetExist(int mobileAssetId);
         MobileAssetDTO GetMobileAsset(int mobileAssetId);
+        MobileAssetDTO GetMobileAssetWithArchives(int mobileAssetId);
         List<MobileAssetDTO> GetAllMobileAssets();
         MobileAssetDTO Create(MobileAssetDTO mobileAssetDTO);
         MobileAssetDTO Update(MobileAssetDTO mobileAssetDTO);

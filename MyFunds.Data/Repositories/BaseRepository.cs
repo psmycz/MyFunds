@@ -63,5 +63,11 @@ namespace MyFunds.Data.Repositories
         {
             return Table.Where(predicate);
         }
+
+        public bool Exist(Expression<Func<TEntity, bool>> predicate)
+        {
+            return Table.Any(predicate);
+        }
+
     }
 }

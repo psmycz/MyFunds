@@ -7,6 +7,7 @@ using MyFunds.Library.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MyFunds.Library.Services
@@ -28,18 +29,20 @@ namespace MyFunds.Library.Services
         }
         public bool FixedAssetExist(int fixedAssetId)
         {
-            return fixedAssetRepository.FixedAssetExist(fixedAssetId);
+            return fixedAssetRepository.Exist(fa => fa.Id == fixedAssetId);
         }
 
         public FixedAssetDTO Create(FixedAssetDTO fixedAssetDTO)
         {
+            if (fixedAssetDTO.Id != 0)
+                throw new ApiException("Cannot declare Id while creating new Fixed Asset");
             if (fixedAssetDTO.InUse && (fixedAssetDTO.Type != FixedAssetType.Rentable || fixedAssetDTO.UserId == 0))
-                throw new ApiException($"Type must be declared as {FixedAssetType.Rentable.ToString()} and userId must be provided");
+                throw new ApiException($"When in use, Type must be declared as {FixedAssetType.Rentable.ToString()} and userId must be provided");
             if (!fixedAssetDTO.InUse && fixedAssetDTO.UserId != 0)
                 throw new ApiException("While not in use, cannot provide userId");
-            if (fixedAssetDTO.UserId != 0 && !userRepository.UserExist(fixedAssetDTO.UserId))
+            if (fixedAssetDTO.UserId != 0 && !userRepository.Exist(u => u.Id == fixedAssetDTO.UserId))
                 throw new ApiException("User with provided Id does not exist");
-            if (fixedAssetDTO.RoomId != 0 && !roomRepository.RoomExist(fixedAssetDTO.RoomId))
+            if (fixedAssetDTO.RoomId != 0 && !roomRepository.Exist(r => r.Id == fixedAssetDTO.RoomId))
                 throw new ApiException("Room with provided Id does not exist");
             if(fixedAssetDTO.Price <= 0)
                 throw new ApiException("Invalid Price");
@@ -64,21 +67,21 @@ namespace MyFunds.Library.Services
         {
             if (fixedAssetDTO.Id <= 0 )
                 throw new ApiException("Incorrect Id");
-            if (!fixedAssetRepository.FixedAssetExist(fixedAssetDTO.Id))
+            if (!this.FixedAssetExist(fixedAssetDTO.Id))
                 throw new ApiException("Fixed asset with provided Id does not exist");
             if (fixedAssetDTO.InUse && (fixedAssetDTO.Type != FixedAssetType.Rentable || fixedAssetDTO.UserId == 0))
                 throw new ApiException($"Type must be declared as {FixedAssetType.Rentable.ToString()} and userId must be provided");
             if (!fixedAssetDTO.InUse && fixedAssetDTO.UserId != 0)
                 throw new ApiException("While not in use, cannot provide userId");
-            if (fixedAssetDTO.UserId != 0 && !userRepository.UserExist(fixedAssetDTO.UserId))
+            if (fixedAssetDTO.UserId != 0 && !userRepository.Exist(u => u.Id == fixedAssetDTO.UserId))
                 throw new ApiException("User with provided Id does not exist");
-            if (fixedAssetDTO.RoomId != 0 && !roomRepository.RoomExist(fixedAssetDTO.RoomId))
+            if (fixedAssetDTO.RoomId != 0 && !roomRepository.Exist(r => r.Id == fixedAssetDTO.RoomId))
                 throw new ApiException("Room with provided Id does not exist");
             if (fixedAssetDTO.Price <= 0)
                 throw new ApiException("Invalid Price");
             if (DateTime.Compare(fixedAssetDTO.PurchaseDate, fixedAssetDTO.WarrantyEndDate) >= 0)
                 throw new ApiException("Purchase Date must be earlier than Warranty End Date");
-            if (!HasPropertyUpdated(fixedAssetDTO.Id, fixedAssetDTO))
+            if (!HasPropertyUpdated(fixedAssetDTO.Id, fixedAssetDTO, fixedAssetRepository))
                 throw new ApiException("None of the properties have changed");
 
 
@@ -113,6 +116,20 @@ namespace MyFunds.Library.Services
             return fixedAssetDTO;
         }
 
+        public FixedAssetDTO GetFixedAssetWithArchives(int fixedAssetId)
+        {
+            if (fixedAssetId <= 0)
+                throw new ApiException("Incorrect Id");
+
+            var fixedAsset = fixedAssetRepository.GetById(fixedAssetId);
+
+            var fixedAssetDTO = mapper.Map<FixedAssetDTO>(fixedAsset ?? throw new NoDataException("No fixed asset with provided Id"));
+            fixedAssetDTO.FixedAssetArchives = mapper.Map<List<FixedAssetArchiveDTO>>(fixedAsset.FixedAssetArchives);
+            fixedAssetDTO.PreviousFixedAsset = fixedAssetDTO?.FixedAssetArchives?.Last();
+
+            return fixedAssetDTO;
+        }
+
         public List<FixedAssetDTO> GetAllFixedAssets()
         {
             var allAssets = fixedAssetRepository.GetAll().ToList();
@@ -122,25 +139,6 @@ namespace MyFunds.Library.Services
             return allAssetsDTO;
         }
 
-        bool HasPropertyUpdated(int updatedFixedAssetId, FixedAssetDTO fixedAssetDTO)
-        {
-            if (updatedFixedAssetId <= 0)
-                throw new ApiException("Incorrect Id");
 
-            var fixedAsset = fixedAssetRepository.GetById(updatedFixedAssetId);
-            bool changed = fixedAsset == null ? throw new NoDataException("No fixed asset with provided Id") : false ||
-                fixedAsset.InUse != fixedAssetDTO.InUse ||
-                fixedAsset.Name != fixedAssetDTO.Name ||
-                fixedAsset.Price != fixedAssetDTO.Price ||
-                fixedAsset.PurchaseDate != fixedAssetDTO.PurchaseDate ||
-                fixedAsset.WarrantyEndDate != fixedAssetDTO.WarrantyEndDate ||
-                fixedAsset.Type != fixedAssetDTO.Type ||
-                fixedAsset.RoomId != fixedAssetDTO.RoomId ||
-                fixedAsset.UserId != fixedAssetDTO.UserId;
-
-            fixedAssetRepository.Detach(fixedAsset);
-
-            return changed;
-        }
     }
 }

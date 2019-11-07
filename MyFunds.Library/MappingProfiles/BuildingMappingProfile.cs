@@ -8,14 +8,11 @@ using System.Threading.Tasks;
 
 namespace MyFunds.Library.MappingProfiles
 {
-    public class RoomMappingProfile : Profile
+    public class BuildingMappingProfile : Profile
     {
-        public RoomMappingProfile()
+        public BuildingMappingProfile()
         {
-            CreateMap<Room, RoomDTO>()
-                .ForMember(dest => dest.FixedAssets, opt => opt.Ignore());
-            
-            CreateMap<RoomDTO, Room>();
+            CreateMap<Building, BuildingDTO>();
         }
     }
 }

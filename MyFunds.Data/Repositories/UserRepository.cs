@@ -14,22 +14,5 @@ namespace MyFunds.Data.Repositories
            : base(context)
         {
         }
-
-
-        public bool UserExist(int userId)
-        {
-            return Table.Any(u => u.Id == userId);
-        }
-
-        public bool UserExist(string username)
-        {
-            return Table.Any(u => u.UserName == username);
-        }
-
-        public bool UserWithEmailExist(string email)
-        {
-            return Table.Any(u => u.Email == email);
-        }
-
     }
 }

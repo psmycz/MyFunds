@@ -27,16 +27,18 @@ namespace MyFunds.Library.Services
 
         public bool MobileAssetExist(int mobileAssetId)
         {
-            return mobileAssetRepository.MobileAssetExist(mobileAssetId);
+            return mobileAssetRepository.Exist(ma => ma.Id == mobileAssetId);
         }
 
         public MobileAssetDTO Create(MobileAssetDTO mobileAssetDTO)
         {
+            if (mobileAssetDTO.Id != 0)
+                throw new ApiException("Cannot declare Id while creating new Mobile Asset");
             if (mobileAssetDTO.InUse && mobileAssetDTO.UserId == 0)
                 throw new ApiException("Must provide UserId when InUse");
             if (!mobileAssetDTO.InUse && mobileAssetDTO.UserId != 0)
                 throw new ApiException("While not in use, cannot provide userId");
-            if (mobileAssetDTO.UserId != 0 && !userRepository.UserExist(mobileAssetDTO.UserId))
+            if (mobileAssetDTO.UserId != 0 && !userRepository.Exist(u => u.Id == mobileAssetDTO.UserId))
                 throw new ApiException("User with provided Id does not exist");
             if (mobileAssetDTO.Price <= 0)
                 throw new ApiException("Invalid Price");
@@ -60,17 +62,17 @@ namespace MyFunds.Library.Services
         {
             if (mobileAssetDTO.Id <= 0)
                 throw new ApiException("Incorrect Id");
-            if (!mobileAssetRepository.MobileAssetExist(mobileAssetDTO.Id))
+            if (!this.MobileAssetExist(mobileAssetDTO.Id))
                 throw new ApiException("Mobile asset with provided Id does not exist");
             if (!mobileAssetDTO.InUse && mobileAssetDTO.UserId != 0)
                 throw new ApiException("While not in use, cannot provide userId");
-            if (mobileAssetDTO.UserId != 0 && !userRepository.UserExist(mobileAssetDTO.UserId))
+            if (mobileAssetDTO.UserId != 0 && !userRepository.Exist(u => u.Id == mobileAssetDTO.UserId))
                 throw new ApiException("User with provided Id does not exist");
             if (mobileAssetDTO.Price <= 0)
                 throw new ApiException("Invalid Price");
             if (DateTime.Compare(mobileAssetDTO.PurchaseDate, mobileAssetDTO.WarrantyEndDate) >= 0)
                 throw new ApiException("Purchase Date must be earlier than Warranty End Date");
-            if (!HasPropertyUpdated(mobileAssetDTO.Id, mobileAssetDTO))
+            if (!HasPropertyUpdated(mobileAssetDTO.Id, mobileAssetDTO, mobileAssetRepository))
                 throw new ApiException("None of the properties have changed");
 
 
@@ -102,6 +104,20 @@ namespace MyFunds.Library.Services
             
             return mobileAssetDTO;
         }
+        
+        public MobileAssetDTO GetMobileAssetWithArchives(int mobileAssetId)
+        {
+            if (mobileAssetId <= 0)
+                throw new ApiException("Incorrect Id");
+
+            var mobileAsset = mobileAssetRepository.GetById(mobileAssetId);
+            
+            var mobileAssetDTO = mapper.Map<MobileAssetDTO>(mobileAsset ?? throw new NoDataException("No mobile asset with provided Id"));
+            mobileAssetDTO.MobileAssetArchives = mapper.Map<List<MobileAssetArchiveDTO>>(mobileAsset.MobileAssetArchives);
+            mobileAssetDTO.PreviousMobileAsset = mobileAssetDTO?.MobileAssetArchives?.Last();
+
+            return mobileAssetDTO;
+        }
 
         public List<MobileAssetDTO> GetAllMobileAssets()
         {
@@ -111,23 +127,5 @@ namespace MyFunds.Library.Services
             return allAssetsDTO;
         }
 
-        bool HasPropertyUpdated(int updatedMobileAssetId, MobileAssetDTO mobileAssetDTO)
-        {
-            if (updatedMobileAssetId <= 0)
-                throw new ApiException("Incorrect Id");
-
-            var mobileAsset = mobileAssetRepository.GetById(updatedMobileAssetId);
-            bool changed = mobileAsset == null ? throw new NoDataException("No mobile asset with provided Id") : false ||
-                mobileAsset.InUse != mobileAssetDTO.InUse ||
-                mobileAsset.Name != mobileAssetDTO.Name ||
-                mobileAsset.Price != mobileAssetDTO.Price ||
-                mobileAsset.PurchaseDate != mobileAssetDTO.PurchaseDate ||
-                mobileAsset.WarrantyEndDate != mobileAssetDTO.WarrantyEndDate ||
-                mobileAsset.UserId != mobileAssetDTO.UserId;
-
-            mobileAssetRepository.Detach(mobileAsset);
-
-            return changed;
-        }
     }
 }

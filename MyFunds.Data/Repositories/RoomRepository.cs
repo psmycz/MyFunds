@@ -14,10 +14,6 @@ namespace MyFunds.Data.Repositories
            : base(context)
         {
         }
-
-        public bool RoomExist(int roomId)
-        {
-            return Table.Any(r => r.Id == roomId);
-        }
+        
     }
 }

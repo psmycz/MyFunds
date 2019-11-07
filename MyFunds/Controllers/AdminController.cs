@@ -26,14 +26,18 @@ namespace MyFunds.Controllers
         readonly UserManager<User> userManager;
         readonly IFixedAssetService fixedAssetService;
         readonly IMobileAssetService mobileAssetService;
+        readonly IRoomService roomService;
+        readonly IBuildingService buildingService;
         readonly IMapper mapper;
 
-        public AdminController(IUserService userService, UserManager<User> userManager, IFixedAssetService fixedAssetService, IMobileAssetService mobileAssetService, IMapper mapper)
+        public AdminController(IUserService userService, UserManager<User> userManager, IFixedAssetService fixedAssetService, IMobileAssetService mobileAssetService, IRoomService roomService, IBuildingService buildingService, IMapper mapper)
         {
             this.userService = userService;
             this.userManager = userManager;
             this.fixedAssetService = fixedAssetService;
             this.mobileAssetService = mobileAssetService;
+            this.roomService = roomService;
+            this.buildingService = buildingService;
             this.mapper = mapper;
         }
 
@@ -113,17 +117,28 @@ namespace MyFunds.Controllers
         [Route("GetFixedAssetWithArchives/{fixedAssetId}")]
         public IActionResult GetFixedAssetWithArchives(int fixedAssetId)
         {
-            throw new NotImplementedException();
-            //return Ok(fixedAssetService.GetFixedAssetWithArchives(fixedAssetId));
+            return Ok(fixedAssetService.GetFixedAssetWithArchives(fixedAssetId));
         }
 
         [HttpGet]
         [Route("GetMobileAssetWithArchives/{mobileAssetId}")]
         public IActionResult GetMobileAssetWithArchives(int mobileAssetId)
         {
-            throw new NotImplementedException();
-            //return Ok(mobileAssetService.GetMobileAssetWithArchives(mobileAssetId));
+            return Ok(mobileAssetService.GetMobileAssetWithArchives(mobileAssetId));
         }
 
+        [HttpGet]
+        [Route("GetRoomWithAssets/{roomId}")]
+        public IActionResult GetRoomWithAssets(int roomId)
+        {
+            return Ok(roomService.GetRoomWithAssets(roomId));
+        }
+
+        [HttpGet]
+        [Route("GetBuildingWithAssets/{buildingId}")]
+        public IActionResult GetBuildingWithAssets(int buildingId)
+        {
+            return Ok(buildingService.GetBuildingWithAssets(buildingId));
+        }
     }
 }

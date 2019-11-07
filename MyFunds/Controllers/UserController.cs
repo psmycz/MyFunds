@@ -32,32 +32,30 @@ namespace MyFunds.Controllers
         readonly IFixedAssetService fixedAssetService;
         readonly IMobileAssetService mobileAssetService;
         readonly IRoomService roomService;
+        readonly IBuildingService buildingService;
         readonly LinkGenerator linkGenerator;
         readonly IMapper mapper;
 
-        public UserController(IUserService userService, UserManager<User> userManager, IFixedAssetService fixedAssetService, IMobileAssetService mobileAssetService, IRoomService roomService, LinkGenerator linkGenerator, IMapper mapper)
+        public UserController(IUserService userService, UserManager<User> userManager, IFixedAssetService fixedAssetService, IMobileAssetService mobileAssetService, IRoomService roomService, IBuildingService buildingService, LinkGenerator linkGenerator, IMapper mapper)
         {
             this.userService = userService;
             this.userManager = userManager;
             this.fixedAssetService = fixedAssetService;
             this.mobileAssetService = mobileAssetService;
             this.roomService = roomService;
+            this.buildingService = buildingService;
             this.linkGenerator = linkGenerator;
             this.mapper = mapper;
         }
 
 
-        // admin only?
+
         [HttpGet]
         [Route("GetUser/{userId}")]
         public IActionResult GetUser(int userId)
         {
             return Ok(userService.GetUser(userId));
         }
-
-
-
-        // admin only?
         [HttpGet]
         [Route("GetAllUsers")]
         public IActionResult GetAllUsers()
@@ -109,7 +107,6 @@ namespace MyFunds.Controllers
 
             return Ok(user);
         }
-
         [HttpGet]
         [Route("GetMeWithAssets")]
         public IActionResult GetMeWithAssets()
@@ -123,6 +120,34 @@ namespace MyFunds.Controllers
             var user = userService.GetUserWithAssets(userId);
 
             return Ok(user);
+        }
+
+
+        [HttpGet]
+        [Route("GetRoom/{roomId}")]
+        public IActionResult GetRoom(int roomId)
+        {
+            return Ok(roomService.GetRoom(roomId));
+        }
+        [HttpGet]
+        [Route("GetAllRooms")]
+        public IActionResult GetAllRooms()
+        {
+            return Ok(roomService.GetAllRooms());
+        }
+
+
+        [HttpGet]
+        [Route("GetBuilding/{buildingId}")]
+        public IActionResult GetBuilding(int buildingId)
+        {
+            return Ok(buildingService.GetBuilding(buildingId));
+        }
+        [HttpGet]
+        [Route("GetAllBuildings")]
+        public IActionResult GetAllBuildings()
+        {
+            return Ok(buildingService.GetAllBuildings());
         }
 
 
@@ -169,7 +194,6 @@ namespace MyFunds.Controllers
             var link = linkGenerator.GetUriByAction(HttpContext, "GetFixedAsset", "User", values: new { fixedAssetId = newAsset.Id });
             return Created(link, newAsset);
         }
-
         [HttpPost]
         [Route("UpdateFixedAsset")]
         public IActionResult UpdateFixedAsset(FixedAssetRequest fixedAsset)
@@ -255,7 +279,6 @@ namespace MyFunds.Controllers
             var link = linkGenerator.GetUriByAction(HttpContext, "GetMobileAsset", "User", values: new { mobileAssetId = newAsset.Id });
             return Created(link, newAsset);
         }
-
         [HttpPost]
         [Route("UpdateMobileAsset")]
         public IActionResult UpdateMobileAsset(MobileAssetRequest mobileAsset)
@@ -295,6 +318,99 @@ namespace MyFunds.Controllers
             var newAsset = mobileAssetService.Update(mobileAssetDTO);
 
             return Ok(newAsset);
+        }
+
+
+        // add room
+        [HttpPost]
+        [Route("AddRoom")]
+        public IActionResult AddRoom(RoomRequest room)
+        {
+            if (room.Type == null)
+            {
+                ModelState.AddModelError(nameof(room.Type), $"Possible types are: {string.Join(", ", Enum.GetNames(typeof(RoomType)))}");
+                return new ValidationProblemDetailsResult();
+            }
+            if (room.BuildingId != 0 && !buildingService.BuildingExist(room.BuildingId))
+            {
+                ModelState.AddModelError(nameof(room.BuildingId), $"Building with provided Id does not exist");
+                return new ValidationProblemDetailsResult();
+            }
+
+
+            var roomDTO = mapper.Map<RoomDTO>(room);
+            var newRoom = roomService.Create(roomDTO);
+
+
+            var link = linkGenerator.GetUriByAction(HttpContext, "GetRoom", "User", values: new { roomId = newRoom.Id });
+            return Created(link, newRoom);
+        }
+        [HttpPost]
+        [Route("UpdateRoom")]
+        public IActionResult UpdateRoom(RoomRequest room)
+        {
+            if (room.Id == 0)
+            {
+                ModelState.AddModelError(nameof(room.Id), $"Id of an item to update is required");
+                return new ValidationProblemDetailsResult();
+            }
+            if (!roomService.RoomExist(room.Id))
+            {
+                ModelState.AddModelError(nameof(room.Id), $"Room with provided Id does not exist");
+                return new ValidationProblemDetailsResult();
+            }
+            if (room.Type == null)
+            {
+                ModelState.AddModelError(nameof(room.Type), $"Possible types are: {string.Join(", ", Enum.GetNames(typeof(RoomType)))}");
+                return new ValidationProblemDetailsResult();
+            }
+            if (room.BuildingId != 0 && !buildingService.BuildingExist(room.BuildingId))
+            {
+                ModelState.AddModelError(nameof(room.BuildingId), $"Building with provided Id does not exist");
+                return new ValidationProblemDetailsResult();
+            }
+
+
+            var roomDTO = mapper.Map<RoomDTO>(room);
+            var newRoom = roomService.Update(roomDTO);
+
+            return Ok(newRoom);
+        }
+
+
+        // add building
+        [HttpPost]
+        [Route("AddBuilding")]
+        public IActionResult AddBuilding(BuildingRequest building)
+        {
+
+            var buildingDTO = mapper.Map<BuildingDTO>(building);
+            var newBuilding = buildingService.Create(buildingDTO);
+
+
+            var link = linkGenerator.GetUriByAction(HttpContext, "GetBuilding", "User", values: new { buildingId = newBuilding.Id });
+            return Created(link, newBuilding);
+        }
+        [HttpPost]
+        [Route("UpdateBuilding")]
+        public IActionResult UpdateBuilding(BuildingRequest building)
+        {
+            if (building.Id == 0)
+            {
+                ModelState.AddModelError(nameof(building.Id), $"Id of an item to update is required");
+                return new ValidationProblemDetailsResult();
+            }
+            if (!buildingService.BuildingExist(building.Id))
+            {
+                ModelState.AddModelError(nameof(building.Id), $"Building with provided Id does not exist");
+                return new ValidationProblemDetailsResult();
+            }
+
+
+            var buildingDTO = mapper.Map<BuildingDTO>(building);
+            var newBuilding = buildingService.Update(buildingDTO);
+
+            return Ok(newBuilding);
         }
     }
 }

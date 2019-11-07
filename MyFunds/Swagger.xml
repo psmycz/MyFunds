@@ -9,5 +9,10 @@
             If type != Rentable then cannot be assigned to user/InUse
             </summary>
         </member>
+        <member name="P:MyFunds.ViewModels.RoomRequest.Area">
+            <summary>
+            Area in square meters
+            </summary>
+        </member>
     </members>
 </doc>

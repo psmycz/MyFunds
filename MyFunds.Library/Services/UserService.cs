@@ -20,11 +20,19 @@ namespace MyFunds.Library.Services
         {
             this.userRepository = userRepository;
         }
+        public bool UserExist(int userId)
+        {
+            return userRepository.Exist(u => u.Id == userId);
+        }
 
+        public bool UserExist(string userName)
+        {
+            return userRepository.Exist(u => u.UserName == userName);
+        }
 
         public bool UserWithEmailExist(string email)
         {
-            return userRepository.UserWithEmailExist(email);
+            return userRepository.Exist(u => u.Email == email);
         }
 
         public List<UserDTO> GetAllUsers()
@@ -66,15 +74,7 @@ namespace MyFunds.Library.Services
             return user == null ? throw new NoDataException("No user with provided Id") : mapper.Map<UserDTO>(user);
         }
 
-        public bool UserExist(int userId)
-        {
-            return userRepository.UserExist(userId);
-        }
-
-        public bool UserExist(string userName)
-        {
-            return userRepository.UserExist(userName);
-        }
+        
 
 
     }

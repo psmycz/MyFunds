@@ -21,6 +21,18 @@ namespace MyFunds.MappingProfiles
             CreateMap<MobileAssetRequest, MobileAssetDTO>()
                 .ForMember(dest => dest.PurchaseDate, opt => opt.MapFrom(src => src.PurchaseDate.ToUniversalTime()))
                 .ForMember(dest => dest.WarrantyEndDate, opt => opt.MapFrom(src => src.WarrantyEndDate.ToUniversalTime()));
+
+            CreateMap<RoomRequest, RoomDTO>()
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => Enum.Parse<RoomType>(src.Type)));
+
+            CreateMap<BuildingRequest, BuildingDTO>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new Address()
+                {
+                    City = src.City,
+                    Country = src.Country,
+                    Postcode = src.Postcode,
+                    Street = src.Street
+                }));
         }
     }
 }

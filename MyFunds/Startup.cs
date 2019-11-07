@@ -116,6 +116,7 @@ namespace MyFunds
             services.AddScoped<IMobileAssetArchiveService, MobileAssetArchiveService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRoomService, RoomService>();
+            services.AddScoped<IBuildingService, BuildingService>();
 
             services.AddScoped<ApiExceptionFilter>();
 

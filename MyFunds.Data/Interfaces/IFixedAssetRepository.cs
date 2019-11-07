@@ -8,6 +8,6 @@ namespace MyFunds.Data.Interfaces
 {
     public interface IFixedAssetRepository : IBaseRepository<FixedAsset>
     {
-        bool FixedAssetExist(int fixedAssetId);
+
     }
 }

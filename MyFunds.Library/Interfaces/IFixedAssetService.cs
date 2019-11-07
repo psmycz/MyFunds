@@ -10,6 +10,7 @@ namespace MyFunds.Library.Interfaces
     {
         bool FixedAssetExist(int fixedAssetId);
         FixedAssetDTO GetFixedAsset(int fixedAssetId);
+        FixedAssetDTO GetFixedAssetWithArchives(int fixedAssetId);
         List<FixedAssetDTO> GetAllFixedAssets();
         FixedAssetDTO Create(FixedAssetDTO fixedAssetDTO);  
         FixedAssetDTO Update(FixedAssetDTO fixedAssetDTO);  

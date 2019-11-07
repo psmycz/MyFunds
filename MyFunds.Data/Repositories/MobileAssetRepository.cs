@@ -15,9 +15,5 @@ namespace MyFunds.Data.Repositories
         {
         }
 
-        public bool MobileAssetExist(int mobileAssetId)
-        {
-            return Table.Any(ma => ma.Id == mobileAssetId);
-        }
     }
 }
