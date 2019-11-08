@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyFunds.Library", "MyFunds.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyFunds.IdentityServer", "MyFunds.IdentityServer\MyFunds.IdentityServer.csproj", "{B3CC8471-038B-4149-92F8-8F343DC9A2CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Example", "Client.Example\Client.Example.csproj", "{095AA1F4-E95D-46A2-ADBC-EB6F74F373AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B3CC8471-038B-4149-92F8-8F343DC9A2CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3CC8471-038B-4149-92F8-8F343DC9A2CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3CC8471-038B-4149-92F8-8F343DC9A2CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{095AA1F4-E95D-46A2-ADBC-EB6F74F373AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{095AA1F4-E95D-46A2-ADBC-EB6F74F373AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{095AA1F4-E95D-46A2-ADBC-EB6F74F373AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{095AA1F4-E95D-46A2-ADBC-EB6F74F373AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
