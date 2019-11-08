@@ -12,7 +12,9 @@ namespace MyFunds.Library.Interfaces
 
         BuildingDTO GetBuildingWithAssets(int buildingId);
         BuildingDTO GetBuilding(int buildingId);
+        BuildingDTO GetBuildingWithRooms(int buildingId);
         List<BuildingDTO> GetAllBuildings();
+        List<BuildingDTO> GetAllBuildingsWithRooms();
 
 
         BuildingDTO Create(BuildingDTO buildingDTO);

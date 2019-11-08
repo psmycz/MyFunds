@@ -37,10 +37,30 @@ namespace MyFunds.Library.Services
             var building = buildingRepository.GetById(buildingId);
             var buildingDTO = mapper.Map<BuildingDTO>(building ?? throw new NoDataException("No building with provided Id"));
 
+            buildingDTO.Rooms = null;
+
+            return buildingDTO;
+        }
+        public BuildingDTO GetBuildingWithRooms(int buildingId)
+        {
+            if (buildingId <= 0)
+                throw new ApiException("Incorrect Id");
+
+            var building = buildingRepository.GetById(buildingId);
+            var buildingDTO = mapper.Map<BuildingDTO>(building ?? throw new NoDataException("No building with provided Id"));
+
             return buildingDTO;
         }
         
         public List<BuildingDTO> GetAllBuildings()
+        {
+            var buildings = mapper.Map<List<BuildingDTO>>(buildingRepository.GetAll());
+            
+            buildings.ForEach(b => b.Rooms = null);
+
+            return buildings ?? throw new NoDataException("No existing buildings");
+        }
+        public List<BuildingDTO> GetAllBuildingsWithRooms()
         {
             var buildings = mapper.Map<List<BuildingDTO>>(buildingRepository.GetAll());
 

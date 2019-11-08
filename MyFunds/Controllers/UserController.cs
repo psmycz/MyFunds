@@ -73,9 +73,51 @@ namespace MyFunds.Controllers
         }
         [HttpGet]
         [Route("GetAllFixedAssets")]
-        public IActionResult GetAllFixedAssets()
+        public IActionResult GetAllFixedAssets(string name, double? minPrice, double? maxPrice, bool? inUse, DateTime? maxPurchaseDate, DateTime? maxWarrantyEndDate, string fixedAssetType, string roomType)
         {
-            return Ok(fixedAssetService.GetAllFixedAssets());
+            var fixedAssets = fixedAssetService.GetAllFixedAssets();
+
+            if (!string.IsNullOrEmpty(name)) fixedAssets = fixedAssets.Where(fa => fa.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (minPrice != null) fixedAssets = fixedAssets.Where(fa => fa.Price > minPrice).ToList();
+
+            if (maxPrice != null) fixedAssets = fixedAssets.Where(fa => fa.Price < maxPrice).ToList();
+
+            if (inUse != null) fixedAssets = fixedAssets.Where(fa => fa.InUse == inUse).ToList();
+            
+            if (maxPurchaseDate != null) fixedAssets = fixedAssets.Where(fa => DateTime.Compare(fa.PurchaseDate, maxPurchaseDate.GetValueOrDefault()) <= 0).ToList();
+
+            if (maxWarrantyEndDate != null) fixedAssets = fixedAssets.Where(fa => DateTime.Compare(fa.WarrantyEndDate, maxWarrantyEndDate.GetValueOrDefault()) <= 0).ToList();
+
+            if (!string.IsNullOrEmpty(fixedAssetType))
+            {
+                FixedAssetType type;
+
+                bool success = Enum.TryParse<FixedAssetType>(fixedAssetType, true, out type);
+                if(!success)
+                {
+                    ModelState.AddModelError(nameof(fixedAssetType), $"Possible types are: {string.Join(", ", Enum.GetNames(typeof(FixedAssetType)))}");
+                    return new ValidationProblemDetailsResult();
+                }
+                else
+                    fixedAssets = fixedAssets.Where(fa => fa.Type == type).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(roomType))
+            {
+                RoomType type;
+
+                bool success = Enum.TryParse<RoomType>(roomType, true, out type);
+                if (!success)
+                {
+                    ModelState.AddModelError(nameof(roomType), $"Possible types are: {string.Join(", ", Enum.GetNames(typeof(RoomType)))}");
+                    return new ValidationProblemDetailsResult();
+                }
+                else
+                    fixedAssets = fixedAssets.Where(fa => fa.Room.Type == type).ToList();
+            }
+
+            return Ok(fixedAssets);
         }
 
 
@@ -87,9 +129,23 @@ namespace MyFunds.Controllers
         }
         [HttpGet]
         [Route("GetAllMobileAssets")]
-        public IActionResult GetAllMobileAssets()
+        public IActionResult GetAllMobileAssets(string name, double? minPrice, double? maxPrice, bool? inUse, DateTime? maxPurchaseDate, DateTime? maxWarrantyEndDate)
         {
-            return Ok(mobileAssetService.GetAllMobileAssets());
+            var mobileAssets = mobileAssetService.GetAllMobileAssets();
+
+            if (!string.IsNullOrEmpty(name)) mobileAssets = mobileAssets.Where(ma => ma.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (minPrice != null) mobileAssets = mobileAssets.Where(ma => ma.Price > minPrice).ToList();
+
+            if (maxPrice != null) mobileAssets = mobileAssets.Where(ma => ma.Price < maxPrice).ToList();
+
+            if (inUse != null) mobileAssets = mobileAssets.Where(ma => ma.InUse == inUse).ToList();
+
+            if (maxPurchaseDate != null) mobileAssets = mobileAssets.Where(ma => DateTime.Compare(ma.PurchaseDate, maxPurchaseDate.GetValueOrDefault()) <= 0).ToList();
+
+            if (maxWarrantyEndDate != null) mobileAssets = mobileAssets.Where(ma => DateTime.Compare(ma.WarrantyEndDate, maxWarrantyEndDate.GetValueOrDefault()) <= 0).ToList();
+
+            return Ok(mobileAssets);
         }
 
 
@@ -144,10 +200,22 @@ namespace MyFunds.Controllers
             return Ok(buildingService.GetBuilding(buildingId));
         }
         [HttpGet]
+        [Route("GetBuildingWithRooms/{buildingId}")]
+        public IActionResult GetBuildingWithRooms(int buildingId)
+        {
+            return Ok(buildingService.GetBuildingWithRooms(buildingId));
+        }
+        [HttpGet]
         [Route("GetAllBuildings")]
         public IActionResult GetAllBuildings()
         {
             return Ok(buildingService.GetAllBuildings());
+        }
+        [HttpGet]
+        [Route("GetAllBuildingsWithRooms")]
+        public IActionResult GetAllBuildingsWithRooms()
+        {
+            return Ok(buildingService.GetAllBuildingsWithRooms());
         }
 
 
@@ -321,7 +389,6 @@ namespace MyFunds.Controllers
         }
 
 
-        // add room
         [HttpPost]
         [Route("AddRoom")]
         public IActionResult AddRoom(RoomRequest room)
@@ -378,7 +445,6 @@ namespace MyFunds.Controllers
         }
 
 
-        // add building
         [HttpPost]
         [Route("AddBuilding")]
         public IActionResult AddBuilding(BuildingRequest building)
