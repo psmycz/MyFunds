@@ -54,14 +54,20 @@ namespace MyFunds.Data.DatabaseContexts
             builder.Entity<Room>()
                 .Property(r => r.Type)
                 .HasConversion(
-                    v => v.ToString(),
-                    v => (RoomType)Enum.Parse(typeof(RoomType), v));
+                    type => type.ToString(),
+                    type => (RoomType)Enum.Parse(typeof(RoomType), type));
 
             builder.Entity<FixedAsset>()
                 .Property(f => f.Type)
                 .HasConversion(
-                    v => v.ToString(),
-                    v => (FixedAssetType)Enum.Parse(typeof(FixedAssetType), v));
+                    type => type.ToString(),
+                    type => (FixedAssetType)Enum.Parse(typeof(FixedAssetType), type));
+            
+            builder.Entity<FixedAssetArchive>()
+                .Property(f => f.Type)
+                .HasConversion(
+                    type => type.ToString(),
+                    type => (FixedAssetType)Enum.Parse(typeof(FixedAssetType), type));
         }
     }
 }

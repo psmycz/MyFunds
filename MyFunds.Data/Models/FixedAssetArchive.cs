@@ -28,7 +28,7 @@ namespace MyFunds.Data.Models
         [JsonIgnore]
         public virtual Room Room { get; set; }
 
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         [JsonIgnore]
         public virtual User User { get; set; }
 

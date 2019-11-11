@@ -34,11 +34,11 @@ namespace MyFunds.Library.Services
         {
             if (mobileAssetDTO.Id != 0)
                 throw new ApiException("Cannot declare Id while creating new Mobile Asset");
-            if (mobileAssetDTO.InUse && mobileAssetDTO.UserId == 0)
+            if (mobileAssetDTO.InUse && mobileAssetDTO.UserId == null)
                 throw new ApiException("Must provide UserId when InUse");
-            if (!mobileAssetDTO.InUse && mobileAssetDTO.UserId != 0)
+            if (!mobileAssetDTO.InUse && mobileAssetDTO.UserId != null)
                 throw new ApiException("While not in use, cannot provide userId");
-            if (mobileAssetDTO.UserId != 0 && !userRepository.Exist(u => u.Id == mobileAssetDTO.UserId))
+            if (mobileAssetDTO.UserId != null && !userRepository.Exist(u => u.Id == mobileAssetDTO.UserId))
                 throw new ApiException("User with provided Id does not exist");
             if (mobileAssetDTO.Price <= 0)
                 throw new ApiException("Invalid Price");
@@ -51,7 +51,7 @@ namespace MyFunds.Library.Services
             mobileAssetRepository.Save();
 
             // to load missing data
-            userRepository.GetById(newMobileAsset.UserId);
+            if (newMobileAsset.UserId != null) userRepository.GetById(newMobileAsset.UserId.GetValueOrDefault());
 
             mobileAssetDTO = mapper.Map<MobileAssetDTO>(newMobileAsset);
 
@@ -64,9 +64,9 @@ namespace MyFunds.Library.Services
                 throw new ApiException("Incorrect Id");
             if (!this.MobileAssetExist(mobileAssetDTO.Id))
                 throw new ApiException("Mobile asset with provided Id does not exist");
-            if (!mobileAssetDTO.InUse && mobileAssetDTO.UserId != 0)
+            if (!mobileAssetDTO.InUse && mobileAssetDTO.UserId != null)
                 throw new ApiException("While not in use, cannot provide userId");
-            if (mobileAssetDTO.UserId != 0 && !userRepository.Exist(u => u.Id == mobileAssetDTO.UserId))
+            if (mobileAssetDTO.UserId != null && !userRepository.Exist(u => u.Id == mobileAssetDTO.UserId))
                 throw new ApiException("User with provided Id does not exist");
             if (mobileAssetDTO.Price <= 0)
                 throw new ApiException("Invalid Price");
@@ -85,7 +85,7 @@ namespace MyFunds.Library.Services
 
 
             // to get missing data
-            userRepository.GetById(updatedMobileAsset.UserId);
+            if (updatedMobileAsset.UserId != null) userRepository.GetById(updatedMobileAsset.UserId.GetValueOrDefault());
 
 
             mobileAssetDTO = mapper.Map<MobileAssetDTO>(updatedMobileAsset);

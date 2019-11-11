@@ -24,7 +24,7 @@ namespace MyFunds.Library.DTO
         }
 
 
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public UserDTO User { get; set; }
 
         public int RoomId { get; set; }

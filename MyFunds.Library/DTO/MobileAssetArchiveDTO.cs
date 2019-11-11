@@ -18,7 +18,7 @@ namespace MyFunds.Library.DTO
         public DateTime TimeStamp { get; set; }
 
 
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public UserDTO User { get; set; }
 
 

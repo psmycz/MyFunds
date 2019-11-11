@@ -49,7 +49,7 @@ namespace MyFunds.ViewModels
             }
         }
 
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "The field RoomId is required and its value must be a positive integer")]

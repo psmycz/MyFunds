@@ -36,12 +36,14 @@ namespace MyFunds.Library.Services
         {
             if (fixedAssetDTO.Id != 0)
                 throw new ApiException("Cannot declare Id while creating new Fixed Asset");
-            if (fixedAssetDTO.InUse && (fixedAssetDTO.Type != FixedAssetType.Rentable || fixedAssetDTO.UserId == 0))
+            if (fixedAssetDTO.InUse && (fixedAssetDTO.Type != FixedAssetType.Rentable || fixedAssetDTO.UserId == null))
                 throw new ApiException($"When in use, Type must be declared as {FixedAssetType.Rentable.ToString()} and userId must be provided");
-            if (!fixedAssetDTO.InUse && fixedAssetDTO.UserId != 0)
+            if (!fixedAssetDTO.InUse && fixedAssetDTO.UserId != null)
                 throw new ApiException("While not in use, cannot provide userId");
-            if (fixedAssetDTO.UserId != 0 && !userRepository.Exist(u => u.Id == fixedAssetDTO.UserId))
+            if (fixedAssetDTO.UserId != null && !userRepository.Exist(u => u.Id == fixedAssetDTO.UserId))
                 throw new ApiException("User with provided Id does not exist");
+            if (fixedAssetDTO.RoomId == 0)
+                throw new ApiException("RoomId is required");
             if (fixedAssetDTO.RoomId != 0 && !roomRepository.Exist(r => r.Id == fixedAssetDTO.RoomId))
                 throw new ApiException("Room with provided Id does not exist");
             if(fixedAssetDTO.Price <= 0)
@@ -57,7 +59,7 @@ namespace MyFunds.Library.Services
 
             // to get missing data 
             roomRepository.GetById(newFixedAsset.RoomId);
-            userRepository.GetById(newFixedAsset.UserId);
+            if (newFixedAsset.UserId != null) userRepository.GetById(newFixedAsset.UserId.GetValueOrDefault());
 
             fixedAssetDTO = mapper.Map<FixedAssetDTO>(newFixedAsset);
             
@@ -69,12 +71,14 @@ namespace MyFunds.Library.Services
                 throw new ApiException("Incorrect Id");
             if (!this.FixedAssetExist(fixedAssetDTO.Id))
                 throw new ApiException("Fixed asset with provided Id does not exist");
-            if (fixedAssetDTO.InUse && (fixedAssetDTO.Type != FixedAssetType.Rentable || fixedAssetDTO.UserId == 0))
+            if (fixedAssetDTO.InUse && (fixedAssetDTO.Type != FixedAssetType.Rentable || fixedAssetDTO.UserId == null))
                 throw new ApiException($"Type must be declared as {FixedAssetType.Rentable.ToString()} and userId must be provided");
-            if (!fixedAssetDTO.InUse && fixedAssetDTO.UserId != 0)
+            if (!fixedAssetDTO.InUse && fixedAssetDTO.UserId != null)
                 throw new ApiException("While not in use, cannot provide userId");
-            if (fixedAssetDTO.UserId != 0 && !userRepository.Exist(u => u.Id == fixedAssetDTO.UserId))
+            if (fixedAssetDTO.UserId != null && !userRepository.Exist(u => u.Id == fixedAssetDTO.UserId))
                 throw new ApiException("User with provided Id does not exist");
+            if (fixedAssetDTO.RoomId == 0)
+                throw new ApiException("RoomId is required");
             if (fixedAssetDTO.RoomId != 0 && !roomRepository.Exist(r => r.Id == fixedAssetDTO.RoomId))
                 throw new ApiException("Room with provided Id does not exist");
             if (fixedAssetDTO.Price <= 0)
@@ -95,7 +99,7 @@ namespace MyFunds.Library.Services
 
             // to get missing data
             roomRepository.GetById(updatedFixedAsset.RoomId);
-            userRepository.GetById(updatedFixedAsset.UserId);
+            if (updatedFixedAsset.UserId != null) userRepository.GetById(updatedFixedAsset.UserId.GetValueOrDefault());
 
 
             fixedAssetDTO = mapper.Map<FixedAssetDTO>(updatedFixedAsset);

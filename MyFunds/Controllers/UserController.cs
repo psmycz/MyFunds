@@ -233,19 +233,24 @@ namespace MyFunds.Controllers
                 ModelState.AddModelError(nameof(fixedAsset.PurchaseDate), $"Purchase Date must be earlier than Warranty End Date");
                 return new ValidationProblemDetailsResult();
             }
-            if (fixedAsset.InUse && (fixedAsset.Type != FixedAssetType.Rentable.ToString() || fixedAsset.UserId == 0))
+            if (fixedAsset.InUse && (fixedAsset.Type != FixedAssetType.Rentable.ToString() || fixedAsset.UserId == null))
             {
                 ModelState.AddModelError(nameof(fixedAsset.InUse), $"Type must be declared as {FixedAssetType.Rentable.ToString()} and userId must be provided");
                 return new ValidationProblemDetailsResult();
             }
-            if (!fixedAsset.InUse && fixedAsset.UserId != 0)
+            if (!fixedAsset.InUse && fixedAsset.UserId != null)
             {
                 ModelState.AddModelError(nameof(fixedAsset.InUse), $"While not in use, cannot provide userId");
                 return new ValidationProblemDetailsResult();
             }
-            if (fixedAsset.UserId != 0 && !userService.UserExist(fixedAsset.UserId))
+            if (fixedAsset.UserId != null && !userService.UserExist(fixedAsset.UserId.GetValueOrDefault()))
             {
                 ModelState.AddModelError(nameof(fixedAsset.UserId), $"User with provided Id does not exist");
+                return new ValidationProblemDetailsResult();
+            }
+            if (fixedAsset.RoomId == 0)
+            {
+                ModelState.AddModelError(nameof(fixedAsset.RoomId), $"Field RoomId is required");
                 return new ValidationProblemDetailsResult();
             }
             if (fixedAsset.RoomId != 0 && !roomService.RoomExist(fixedAsset.RoomId))
@@ -286,19 +291,24 @@ namespace MyFunds.Controllers
                 ModelState.AddModelError(nameof(fixedAsset.PurchaseDate), $"Purchase Date must be earlier than Warranty End Date");
                 return new ValidationProblemDetailsResult();
             }
-            if (fixedAsset.InUse && (fixedAsset.Type != FixedAssetType.Rentable.ToString() || fixedAsset.UserId == 0))
+            if (fixedAsset.InUse && (fixedAsset.Type != FixedAssetType.Rentable.ToString() || fixedAsset.UserId == null))
             {
                 ModelState.AddModelError(nameof(fixedAsset.InUse), $"Type must be declared as {FixedAssetType.Rentable.ToString()} and userId must be provided");
                 return new ValidationProblemDetailsResult();
             }
-            if (!fixedAsset.InUse && fixedAsset.UserId != 0)
+            if (!fixedAsset.InUse && fixedAsset.UserId != null)
             {
                 ModelState.AddModelError(nameof(fixedAsset.InUse), $"While not in use, cannot provide userId");
                 return new ValidationProblemDetailsResult();
             }
-            if (fixedAsset.UserId != 0 && !userService.UserExist(fixedAsset.UserId))
+            if (fixedAsset.UserId != null && !userService.UserExist(fixedAsset.UserId.GetValueOrDefault()))
             {
                 ModelState.AddModelError(nameof(fixedAsset.UserId), $"User with provided Id does not exist");
+                return new ValidationProblemDetailsResult();
+            }
+            if (fixedAsset.RoomId == 0)
+            {
+                ModelState.AddModelError(nameof(fixedAsset.RoomId), $"Field RoomId is required");
                 return new ValidationProblemDetailsResult();
             }
             if (fixedAsset.RoomId != 0 && !roomService.RoomExist(fixedAsset.RoomId))
@@ -318,24 +328,24 @@ namespace MyFunds.Controllers
         [Route("AddMobileAsset")]
         public IActionResult AddMobileAsset(MobileAssetRequest mobileAsset)
         {
-            if (mobileAsset.InUse && mobileAsset.UserId == 0)
+            if (mobileAsset.InUse && mobileAsset.UserId == null)
             {
                 ModelState.AddModelError(nameof(mobileAsset.UserId), $"Must provide UserId when InUse");
                 return new ValidationProblemDetailsResult();
             }
-            if (!mobileAsset.InUse && mobileAsset.UserId != 0)
+            if (!mobileAsset.InUse && mobileAsset.UserId != null)
             {
                 ModelState.AddModelError(nameof(mobileAsset.UserId), $"While not in use, cannot provide userId");
                 return new ValidationProblemDetailsResult();
             }
-            if (mobileAsset.UserId != 0 && !userService.UserExist(mobileAsset.UserId))
+            if (mobileAsset.UserId != null && !userService.UserExist(mobileAsset.UserId.GetValueOrDefault()))
             {
                 ModelState.AddModelError(nameof(mobileAsset.UserId), $"User with provided Id does not exist");
                 return new ValidationProblemDetailsResult();
             }
             if (DateTime.Compare(mobileAsset.PurchaseDate, mobileAsset.WarrantyEndDate) >= 0)
             {
-                ModelState.AddModelError(nameof(mobileAsset.UserId), $"Purchase Date must be earlier than Warranty End Date");
+                ModelState.AddModelError(nameof(mobileAsset.PurchaseDate), $"Purchase Date must be earlier than Warranty End Date");
                 return new ValidationProblemDetailsResult();
             }
 
@@ -366,17 +376,17 @@ namespace MyFunds.Controllers
                 ModelState.AddModelError(nameof(mobileAsset.PurchaseDate), $"Purchase Date must be earlier than Warranty End Date");
                 return new ValidationProblemDetailsResult();
             }
-            if (mobileAsset.InUse && mobileAsset.UserId == 0)
+            if (mobileAsset.InUse && mobileAsset.UserId == null)
             {
                 ModelState.AddModelError(nameof(mobileAsset.InUse), $"UserId must be provided when InUse");
                 return new ValidationProblemDetailsResult();
             }
-            if (!mobileAsset.InUse && mobileAsset.UserId != 0)
+            if (!mobileAsset.InUse && mobileAsset.UserId != null)
             {
                 ModelState.AddModelError(nameof(mobileAsset.InUse), $"While not in use, cannot provide userId");
                 return new ValidationProblemDetailsResult();
             }
-            if (mobileAsset.UserId != 0 && !userService.UserExist(mobileAsset.UserId))
+            if (mobileAsset.UserId != null && !userService.UserExist(mobileAsset.UserId.GetValueOrDefault()))
             {
                 ModelState.AddModelError(nameof(mobileAsset.UserId), $"User with provided Id does not exist");
                 return new ValidationProblemDetailsResult();

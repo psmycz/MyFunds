@@ -91,8 +91,11 @@ namespace MyFunds
                 });
 
 
-            services.AddMvc()
-                .AddJsonOptions(options => options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore);
+            services.AddMvc(options =>
+            {
+                options.OutputFormatters.Add(new ExcelOutputFormatter());
+            })
+            .AddJsonOptions(options => options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore);
 
 
             // controller with [ApiController] attribute does auto validation for ModelState, here custom error response

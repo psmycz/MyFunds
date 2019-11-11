@@ -25,7 +25,7 @@ namespace MyFunds.Data.Models
         public DateTime WarrantyEndDate { get; set; }
 
 
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         [JsonIgnore]
         public virtual User User { get; set; }
 
