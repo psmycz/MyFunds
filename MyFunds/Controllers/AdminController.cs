@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -151,7 +152,8 @@ namespace MyFunds.Controllers
             return Ok(buildingService.GetBuildingWithAssets(buildingId));
         }
 
-        //TODO: fix placing properties in correct order for nested objects
+        //TODO: now cannot contain duplicates, need prefix or sth
+        //TODO: make new sheet for every array in json string
         [HttpPost]
         [Route("ExportExcel")]
         public async Task<IActionResult> ExportExcel([FromQuery] string fileName = "file")
@@ -219,39 +221,178 @@ namespace MyFunds.Controllers
                     return string.Empty;
                 }
 
+                var propy = new List<KeyValuePair<string, object>>();
+
+                var listOfObjects = new List<KeyValuePair<string, List<string>>>();
+                var listOfArrays = new List<KeyValuePair<string, List<string>>>();
+
+                data.ForEach(obj => PropyAdd(obj.Properties().ToList(), ""));
+                
+                void PropyAdd(List<JProperty> jProperties, string prefix = "")
+                {
+                    foreach (var prop in jProperties)
+                    {
+                        if(prop.Value is JValue)
+                        {
+                            throw new ApiException("Json contains na object without property - JValue - provided json must contain only JObjects");
+                        }
+
+                        if (!(prop.Value is JObject) && !(prop.Value is JArray))
+                        {
+                            propy.Add(new KeyValuePair<string, object>(prop.Name, prop.Value));
+                        }
+
+                        if ((prop.Value is JObject) && !(prop.Value is JArray))
+                        {
+                            propy.Add(new KeyValuePair<string, object>(prop.Name, "object"));
+                            var obj = (prop.Value as JObject);
+                            var objProperties = obj.Properties().ToList().Select(p => p.Name).ToList();
+
+                            if (!listOfObjects.Any(o => o.Key == prop.Name))
+                            {
+                                listOfObjects.Add(new KeyValuePair<string, List<string>>(prop.Name, objProperties));
+                            }
+
+                            var properties = listOfObjects.First(k => k.Key == prop.Name).Value;
+                            foreach (var p in objProperties)
+                            {
+                                if (!properties.Any(propoperty => propoperty == p))
+                                {
+                                    properties.Add(p);
+                                }
+                            }
+
+                            PropyAdd(obj.Properties().ToList(), prop.Name + "_");
+                        }
+
+                        if (!(prop.Value is JObject) && (prop.Value is JArray))
+                        {
+                            propy.Add(new KeyValuePair<string, object>(prop.Name, "array"));
+                            
+                            List<JObject> jObjectList = new List<JObject>();
+                            (prop.Value as JArray).ToList().ForEach(obj => jObjectList.Add((JObject)obj));
+                            var arrayProperties = jObjectList.SelectMany(o => o.Properties()).Select(p => p.Name).Distinct().ToList();
+                            
+                            if (!listOfArrays.Any(o => o.Key == prop.Name))
+                            {
+                                listOfArrays.Add(new KeyValuePair<string, List<string>>(prop.Name, arrayProperties));
+                            }
+
+                            var properties = listOfArrays.First(k => k.Key == prop.Name).Value;
+                            foreach (var p in arrayProperties)
+                            {
+                                if (!properties.Any(propoperty => propoperty == p))
+                                {
+                                    properties.Add(p);
+                                }
+                            }
+
+                            jObjectList.ForEach(obj => PropyAdd(obj.Properties().ToList(), "_" + prop.Name));
+                        }
+
+                    }
+                }
+                var list = propy.Select(p => p.Key).Distinct().ToList();
+                //var listOfObjectPropertiesWithoutArrays = listOfObjects.SelectMany(o => o.Value).Select(name => name).Where(name => !listOfArrays.Any(k => k.Key == name)).ToList();
+                
+                var arrayProp = data.SelectMany(o => o.Properties()).Select(p => p.Name).Distinct().ToList();
+
+
+                int prevLength = arrayProp.Count;
+                AddObjectProps();
+
+                void AddObjectProps()
+                {
+                    foreach (var p in listOfObjects)
+                    {
+                        int index = arrayProp.FindIndex(n => n == p.Key);
+
+                        if (index == -1) continue;
+
+                        var objectProps = arrayProp.Skip(index + 1).Take(p.Value.Count).ToList();
+
+                        if (objectProps.TrueForAll(o => p.Value.Contains(o))) continue;
+
+                        arrayProp.InsertRange(index + 1, p.Value);
+                    }
+                }
+
+                while (prevLength != arrayProp.Count)
+                {
+                    prevLength = arrayProp.Count;
+                    AddObjectProps();
+                }
+
+                /*
+                                int prevLength = arrayProp.Count;
+                                AddArrayProps();
+
+                                void AddArrayProps()
+                                {
+                                    foreach (var p in listOfArrays)
+                                    {
+                                        int index = arrayProp.FindIndex(n => n == p.Key);
+
+                                        if (index == -1) continue;
+
+                                        arrayProp.InsertRange(index + 1, p.Value);
+                                    }
+                                }
+
+                                while (prevLength != arrayProp.Count)
+                                {
+                                    prevLength = arrayProp.Count;
+                                    AddArrayProps();
+                                }
+                */
+
                 //header
                 var headerRow = new Row();
-                foreach (var prop in props)
+                foreach (var prop in arrayProp)//list)//props)
                 {
                     headerRow.AppendChild(
-                        GetCell(prop.Key)
+                        GetCell(prop)
                     );
                 }
                 sheetData.AppendChild(headerRow);
-
+                
                 //body
                 foreach (JObject record in data)
                 {
                     var recordProperties = record.Properties().ToList();
 
                     var row = new Row();
-                    foreach (var prop in props)
+                    foreach (var prop in arrayProp)//list)//props)
                     {
-                        var propValue = Find(prop.Key, recordProperties);
+                        var propValue = Find(prop, recordProperties);
 
                         string Find(string propName, List<JProperty> properties)
                         {
                             foreach (var p in properties)
                             {
-                                if (p.Name == propName && !(p.Value is JObject))
+                                if (p.Name == propName && !(p.Value is JObject) && !(p.Value is JArray))
                                     return p.Value.ToString();
-                                if (p.Name == propName && (p.Value is JObject))
-                                    return string.Empty;
+                                if (p.Name == propName && (p.Value is JObject) && !(p.Value is JArray))
+                                    return "OBJECT";//string.Empty;
+                                if (p.Name == propName && (p.Value is JArray))
+                                    return "ARRAY";//string.Empty;
                                 if (p.Name != propName && (p.Value is JObject))
                                 {
                                     string value = Find(propName, (p.Value as JObject).Properties().ToList());
                                     if (value != "magicString")
                                         return value;
+                                }
+                                if (p.Name != propName && (p.Value is JArray))
+                                {
+                                    List<JObject> jObjectList = new List<JObject>();
+                                    (p.Value as JArray).ToList().ForEach(obj => jObjectList.Add((JObject)obj));
+
+                                    foreach (JObject obj in jObjectList)
+                                    {
+                                        string value = Find(propName, obj.Properties().ToList());
+                                        if (value != "magicString")
+                                            return value;
+                                    }
                                 }
                             }
 
