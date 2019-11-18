@@ -4,6 +4,76 @@
         <name>MyFunds</name>
     </assembly>
     <members>
+        <member name="M:MyFunds.Controllers.AccountController.Register(MyFunds.ViewModels.RegisterRequest)">
+            <summary>
+            Register a new User
+            </summary>
+            <response code="200">Successfuly created new user</response>
+            <response code="400">Unable to finish request likely due to validation error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AccountController.Remove">
+            <summary>
+            Remove existing user
+            </summary>
+            <response code="200">Successfuly removed user</response>
+            <response code="400">Unable to finish request likely due to validation error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AdminController.GiveUserAdminRole(System.Int32)">
+            <summary>
+            Give an admin role to user
+            </summary>
+            <response code="200">Successfuly given permission to user</response>
+            <response code="400">Unable to finish request likely due to validation error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AdminController.RemoveAdminRole(System.Int32)">
+            <summary>
+            Remove admin role from user
+            </summary>
+            <response code="200">Successfuly removed permission from user</response>
+            <response code="400">Unable to finish request likely due to validation error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AdminController.GetUserWithAssets(System.Int32)">
+            <summary>
+            Get user with all assets that belongs to him
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AdminController.GetAllUsersWithAssets">
+            <summary>
+            Get all users with their assets
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AdminController.GetFixedAssetWithArchives(System.Int32)">
+            <summary>
+            Get all users with their assets
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AdminController.GetMobileAssetWithArchives(System.Int32)">
+            <summary>
+            Get all users with their assets
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AdminController.GetRoomWithAssets(System.Int32)">
+            <summary>
+            Get all users with their assets
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AdminController.GetBuildingWithAssets(System.Int32)">
+            <summary>
+            Get all users with their assets
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.AdminController.ExportExcel(System.String)">
+            <summary>
+            Export excel from given json
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
         <member name="F:MyFunds.ViewModels.FixedAssetRequest.type">
             <summary>
             If type != Rentable then cannot be assigned to user/InUse

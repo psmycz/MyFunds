@@ -52,9 +52,15 @@ namespace MyFunds.Controllers
             this.mapper = mapper;
         }
 
-
+        /// <summary>
+        /// Give an admin role to user
+        /// </summary>
+        /// <response code="200">Successfuly given permission to user</response>
+        /// <response code="400">Unable to finish request likely due to validation error</response>
         [HttpPost]
         [Route("GiveUserAdminRole/{userId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public async Task<IActionResult> GiveUserAdminRole(int userId)
         {
             var user = await userManager.FindByIdAsync(userId.ToString());
@@ -76,8 +82,15 @@ namespace MyFunds.Controllers
             return addClaimsResult.Succeeded ? Ok() : throw new ApiException("An error occured while adding claims to user");
         }
 
+        /// <summary>
+        /// Remove admin role from user
+        /// </summary>
+        /// <response code="200">Successfuly removed permission from user</response>
+        /// <response code="400">Unable to finish request likely due to validation error</response>
         [HttpPost]
         [Route("RemoveAdminRole/{userId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public async Task<IActionResult> RemoveAdminRole(int userId)
         {
             int currentUserId;
@@ -109,53 +122,94 @@ namespace MyFunds.Controllers
             return addClaimsResult.Succeeded ? Ok() : throw new ApiException("An error occured while removing claims from user");
         }
 
-
+        /// <summary>
+        /// Get user with all assets that belongs to him
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpGet]
         [Route("GetUserWithAssets/{userId}")]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
         public IActionResult GetUserWithAssets(int userId)
         {
             return Ok(userService.GetUserWithAssets(userId));
         }
 
+        /// <summary>
+        /// Get all users with their assets
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpGet]
         [Route("GetAllUsersWithAssets")]
+        [ProducesResponseType(typeof(List<UserDTO>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
         public IActionResult GetAllUsersWithAssets()
         {
             return Ok(userService.GetAllUsersWithAssets());
         }
 
+        /// <summary>
+        /// Get all users with their assets
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpGet]
         [Route("GetFixedAssetWithArchives/{fixedAssetId}")]
+        [ProducesResponseType(typeof(FixedAssetDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
         public IActionResult GetFixedAssetWithArchives(int fixedAssetId)
         {
             return Ok(fixedAssetService.GetFixedAssetWithArchives(fixedAssetId));
         }
 
+        /// <summary>
+        /// Get all users with their assets
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpGet]
         [Route("GetMobileAssetWithArchives/{mobileAssetId}")]
+        [ProducesResponseType(typeof(MobileAssetDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
         public IActionResult GetMobileAssetWithArchives(int mobileAssetId)
         {
             return Ok(mobileAssetService.GetMobileAssetWithArchives(mobileAssetId));
         }
 
+        /// <summary>
+        /// Get all users with their assets
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpGet]
         [Route("GetRoomWithAssets/{roomId}")]
+        [ProducesResponseType(typeof(RoomDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
         public IActionResult GetRoomWithAssets(int roomId)
         {
             return Ok(roomService.GetRoomWithAssets(roomId));
         }
 
+        /// <summary>
+        /// Get all users with their assets
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpGet]
         [Route("GetBuildingWithAssets/{buildingId}")]
+        [ProducesResponseType(typeof(BuildingDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
         public IActionResult GetBuildingWithAssets(int buildingId)
         {
             return Ok(buildingService.GetBuildingWithAssets(buildingId));
         }
 
         //TODO: now cannot contain duplicates, need prefix or sth
-        //TODO: make new sheet for every array in json string
+        //TODO: make new sheet for every array in json stringc
+        /// <summary>
+        /// Export excel from given json
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpPost]
         [Route("ExportExcel")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
         public async Task<IActionResult> ExportExcel([FromQuery] string fileName = "file")
         {
             var streamReader = new StreamReader(HttpContext.Request.Body);

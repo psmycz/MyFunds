@@ -29,9 +29,16 @@ namespace MyFunds.Controllers
             this.userManager = userManager;
         }
 
+        /// <summary>
+        /// Register a new User
+        /// </summary>
+        /// <response code="200">Successfuly created new user</response>
+        /// <response code="400">Unable to finish request likely due to validation error</response>
         [HttpPost]
         [Route("Register")]
         [AllowAnonymous]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
             if (await IsUsernameInUse(registerRequest.UserName))
@@ -79,8 +86,15 @@ namespace MyFunds.Controllers
         }
 
         // TODO: check if token work after removing user
+        /// <summary>
+        /// Remove existing user
+        /// </summary>
+        /// <response code="200">Successfuly removed user</response>
+        /// <response code="400">Unable to finish request likely due to validation error</response>
         [HttpPost]
         [Route("Remove")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public async Task<IActionResult> Remove()
         {
             var currentUser = await userManager.GetUserAsync(HttpContext.User);

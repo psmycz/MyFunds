@@ -138,6 +138,25 @@ namespace MyFunds
                     Version = "v1",
                     Title = "API Instruction",
                 });
+                c.AddSecurityDefinition(IdentityServerAuthenticationDefaults.AuthenticationScheme, new OAuth2Scheme 
+                {
+                    Type = "oauth2",
+                    Flow = "password",
+
+                    TokenUrl = Configuration["IdentityServerAddress"] + "/connect/token",
+                    Scopes = new Dictionary<string, string> 
+                    {
+                        { "MyFundsApi", "To get access to api" },
+                        { "offline_access", "To get refresh token in addition to access token" }
+                    }
+                    
+                });
+                c.OperationFilter<AuthorizeCheckOperationFilter>();
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer" , new List<string> { "MyFundsApi" } }
+                });
+
                 c.CustomSchemaIds(i => i.FullName);
                 var basePath = PlatformServices
                                     .Default
@@ -219,6 +238,11 @@ namespace MyFunds
             {
                 var swaggerPath = "/swagger/v1/swagger.json";
                 c.SwaggerEndpoint(swaggerPath, "MyFunds API V1");
+
+                c.OAuthClientId("ro.client");
+                // TODO: shouldn't be published i guess
+                c.OAuthClientSecret("ClientSecret");
+                c.OAuthAppName("MyFunds Api");
             });
         }
     }
