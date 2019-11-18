@@ -236,6 +236,7 @@ namespace MyFunds.Controllers
             }
 
 
+
             HttpContext.Response.Headers["Content-Disposition"] =
                 new ContentDispositionHeaderValue("attachment")
                 {
@@ -280,25 +281,28 @@ namespace MyFunds.Controllers
                 var listOfObjects = new List<KeyValuePair<string, List<string>>>();
                 var listOfArrays = new List<KeyValuePair<string, List<string>>>();
 
-                data.ForEach(obj => PropyAdd(obj.Properties().ToList(), ""));
+                //data.ForEach(obj => PropyAddWithPrefix(obj.Properties().ToList()));
                 
-                void PropyAdd(List<JProperty> jProperties, string prefix = "")
+                void PropyAdd(List<JProperty> jProperties)
                 {
                     foreach (var prop in jProperties)
                     {
-                        if(prop.Value is JValue)
+                        if(!prop.HasValues)
                         {
                             throw new ApiException("Json contains na object without property - JValue - provided json must contain only JObjects");
                         }
 
+                        // Good prop
                         if (!(prop.Value is JObject) && !(prop.Value is JArray))
                         {
                             propy.Add(new KeyValuePair<string, object>(prop.Name, prop.Value));
                         }
 
+                        // JObject
                         if ((prop.Value is JObject) && !(prop.Value is JArray))
                         {
                             propy.Add(new KeyValuePair<string, object>(prop.Name, "object"));
+                            
                             var obj = (prop.Value as JObject);
                             var objProperties = obj.Properties().ToList().Select(p => p.Name).ToList();
 
@@ -316,15 +320,26 @@ namespace MyFunds.Controllers
                                 }
                             }
 
-                            PropyAdd(obj.Properties().ToList(), prop.Name + "_");
+                            PropyAdd(obj.Properties().ToList());
                         }
 
+                        // JArray
                         if (!(prop.Value is JObject) && (prop.Value is JArray))
                         {
                             propy.Add(new KeyValuePair<string, object>(prop.Name, "array"));
                             
                             List<JObject> jObjectList = new List<JObject>();
-                            (prop.Value as JArray).ToList().ForEach(obj => jObjectList.Add((JObject)obj));
+
+                            var jArray = (prop.Value as JArray).ToList();
+                            if (jArray.Count != 0 && jArray.TrueForAll(o => o is JObject))
+                            {
+                                jArray.ForEach(obj => jObjectList.Add((JObject)obj));
+                            }
+                            else
+                            {
+                                throw new ApiException("Provided json must contain only JObjects");
+                            }
+
                             var arrayProperties = jObjectList.SelectMany(o => o.Properties()).Select(p => p.Name).Distinct().ToList();
                             
                             if (!listOfArrays.Any(o => o.Key == prop.Name))
@@ -341,11 +356,149 @@ namespace MyFunds.Controllers
                                 }
                             }
 
-                            jObjectList.ForEach(obj => PropyAdd(obj.Properties().ToList(), "_" + prop.Name));
+                            jObjectList.ForEach(obj => PropyAdd(obj.Properties().ToList()));
                         }
 
                     }
                 }
+
+                (List<(string name, List<(string name, object value)> value)> newData, List<(string name, List<string> properties)> objects, List<(string name, List<string> properties)> arrays) SomeFunction(List<JObject> jData)
+                {
+                    var newData = new List<(string name, List<(string name, object value)> value)>();
+
+                    var objects = new List<(string name, List<string> properties)>();
+                    var arrays = new List<(string name, List<string> properties)>();
+
+
+                    for (int i = 0; i < jData.Count; i++)
+                    {
+                        var listOfProps = jData[i].Properties().ToList();
+                        newData.Add((name: string.Empty, value: new List<(string name, object value)>()));
+
+                        AddPropertyToObject(newData[i].value, listOfProps, objects, arrays);
+                    }
+
+                    return (newData, objects, arrays);
+                }
+
+
+                void AddPropertyToObject(List<(string name, object value)> newData, List<JProperty> jProperties, List<(string name, List<string> properties)> objects, List<(string name, List<string> properties)> arrays, string prefix = "")
+                {
+                    foreach (var prop in jProperties)
+                    {
+                        if (!prop.HasValues)
+                        {
+                            throw new ApiException("Json contains na object without property - JValue - provided json must contain only JObjects");
+                        }
+
+                        // Good prop
+                        if (!(prop.Value is JObject) && !(prop.Value is JArray))
+                        {
+                            newData.Add((name: prefix + prop.Name, value: prop.Value.ToString()));
+
+                            //propy.Add(new KeyValuePair<string, object>(prefix + prop.Name, prop.Value));
+                            
+                        }
+
+                        // JObject
+                        if ((prop.Value is JObject) && !(prop.Value is JArray))
+                        {
+                            newData.Add((name: prop.Name, value: new List<(string name, object value)>()));
+
+                            //propy.Add(new KeyValuePair<string, object>(prefix + prop.Name, "object"));
+                            
+                            // adding to list of objects
+                            var obj = (prop.Value as JObject);
+
+                            int index = prop.Name.LastIndexOf('_');
+                            string cleanPropertyName;
+                            if (index < 0)
+                                cleanPropertyName = prop.Name;
+                            else
+                                cleanPropertyName = prop.Name.Skip(index + 1).ToString();
+
+                            var objProperties = obj.Properties().ToList().Select(p => cleanPropertyName + "_" + p.Name).ToList();
+
+                            if (!objects.Any(o => o.name == prop.Name))
+                            {
+                                objects.Add((prop.Name, objProperties));
+                            }
+                            else
+                            {
+                                var properties = objects.First(o => o.name == prop.Name).properties;
+                                foreach (var p in objProperties)
+                                {
+                                    if (!properties.Any(propoperty => propoperty == p))
+                                    {
+                                        properties.Add(p);
+                                    }
+                                }
+                            }
+
+                            AddPropertyToObject(newData.First(v => v.name == prop.Name).value as List<(string name, object value)>, obj.Properties().ToList(), objects, arrays, prop.Name + "_");
+                        }
+
+                        // JArray
+                        if (!(prop.Value is JObject) && (prop.Value is JArray))
+                        {
+                            newData.Add((name: prop.Name, value: new List<(string name, List<(string name, object value)> value)>()));
+
+                            //propy.Add(new KeyValuePair<string, object>(prefix + prop.Name, "array"));
+
+                            List<JObject> jObjectList = new List<JObject>();
+
+                            var jArray = (prop.Value as JArray).ToList();
+                            if (jArray.Count != 0 && jArray.TrueForAll(o => o is JObject))
+                            {
+                                jArray.ForEach(obj => jObjectList.Add((JObject)obj));
+                            }
+                            else
+                            {
+                                throw new ApiException("Provided json must contain only JObjects");
+                            }
+
+                            int index = prop.Name.LastIndexOf('_');
+                            string cleanPropertyName;
+                            if (index < 0)
+                                cleanPropertyName = prop.Name;
+                            else
+                                cleanPropertyName = prop.Name.Skip(index + 1).ToString();
+
+                            var arrayProperties = jObjectList.SelectMany(o => o.Properties()).Select(p => cleanPropertyName + "_" + p.Name).Distinct().ToList();
+
+                            if (!arrays.Any(o => o.name == prop.Name))
+                            {
+                                arrays.Add((prop.Name, arrayProperties));
+                            }
+                            else
+                            {
+                                var properties = arrays.First(o => o.name == prop.Name).properties;
+                                foreach (var p in arrayProperties)
+                                {
+                                    if (!properties.Any(propoperty => propoperty == p))
+                                    {
+                                        properties.Add(p);
+                                    }
+                                }
+                            }
+                            //jObjectList.ForEach(obj => PropyAddWithPrefix(obj.Properties().ToList(), prop.Name + "_"));
+                            
+                            for (int i = 0; i < jObjectList.Count; i++)
+                            {
+                                var listOfProps = jObjectList[i].Properties().ToList();
+                                var ahah = newData.First(o => o.name == prop.Name).value as List<(string name, List<(string name, object value)> value)>;// ((name: string.Empty, value: new List<(string name, object value)>()));
+                                
+                                ahah.Add((name: string.Empty, value: new List<(string name, object value)>()));
+
+                                AddPropertyToObject(ahah[i].value, listOfProps, objects, arrays, prop.Name + "_");
+                            }
+                        }
+
+                    }
+                }
+
+                var dupaaa = SomeFunction(data);
+
                 var list = propy.Select(p => p.Key).Distinct().ToList();
                 //var listOfObjectPropertiesWithoutArrays = listOfObjects.SelectMany(o => o.Value).Select(name => name).Where(name => !listOfArrays.Any(k => k.Key == name)).ToList();
                 
@@ -365,7 +518,7 @@ namespace MyFunds.Controllers
 
                         var objectProps = arrayProp.Skip(index + 1).Take(p.Value.Count).ToList();
 
-                        if (objectProps.TrueForAll(o => p.Value.Contains(o))) continue;
+                        if (objectProps?.Count != 0 && objectProps.TrueForAll(o => p.Value.Contains(o))) continue;
 
                         arrayProp.InsertRange(index + 1, p.Value);
                     }
