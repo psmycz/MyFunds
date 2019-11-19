@@ -362,6 +362,12 @@ namespace MyFunds.Controllers
                     }
                 }
 
+
+
+
+
+
+
                 (List<(string name, List<(string name, object value)> value)> newData, List<(string name, List<string> properties)> objects, List<(string name, List<string> properties)> arrays) SomeFunction(List<JObject> jData)
                 {
                     var newData = new List<(string name, List<(string name, object value)> value)>();
@@ -417,7 +423,7 @@ namespace MyFunds.Controllers
                             else
                                 cleanPropertyName = prop.Name.Skip(index + 1).ToString();
 
-                            var objProperties = obj.Properties().ToList().Select(p => cleanPropertyName + "_" + p.Name).ToList();
+                            var objProperties = obj.Properties().ToList().Select(p => !(p.Value is JObject || p.Value is JArray) ? cleanPropertyName + "_" + p.Name : p.Name).ToList();
 
                             if (!objects.Any(o => o.name == prop.Name))
                             {
@@ -464,7 +470,7 @@ namespace MyFunds.Controllers
                             else
                                 cleanPropertyName = prop.Name.Skip(index + 1).ToString();
 
-                            var arrayProperties = jObjectList.SelectMany(o => o.Properties()).Select(p => cleanPropertyName + "_" + p.Name).Distinct().ToList();
+                            var arrayProperties = jObjectList.SelectMany(o => o.Properties()).Select(p => !(p.Value is JObject || p.Value is JArray) ? cleanPropertyName + "_" + p.Name : p.Name).Distinct().ToList();
 
                             if (!arrays.Any(o => o.name == prop.Name))
                             {
@@ -486,18 +492,52 @@ namespace MyFunds.Controllers
                             for (int i = 0; i < jObjectList.Count; i++)
                             {
                                 var listOfProps = jObjectList[i].Properties().ToList();
-                                var ahah = newData.First(o => o.name == prop.Name).value as List<(string name, List<(string name, object value)> value)>;// ((name: string.Empty, value: new List<(string name, object value)>()));
-                                
-                                ahah.Add((name: string.Empty, value: new List<(string name, object value)>()));
+                                var newDataValue = newData.First(o => o.name == prop.Name).value as List<(string name, List<(string name, object value)> value)>;
 
-                                AddPropertyToObject(ahah[i].value, listOfProps, objects, arrays, prop.Name + "_");
+                                newDataValue.Add((name: string.Empty, value: new List<(string name, object value)>()));
+
+                                AddPropertyToObject(newDataValue[i].value, listOfProps, objects, arrays, prop.Name + "_");
                             }
                         }
 
                     }
                 }
 
-                var dupaaa = SomeFunction(data);
+                var convertedData = SomeFunction(data);
+
+                var listOfPropertyNames = convertedData.newData.SelectMany(r => r.value).Select(p => p.name).Distinct().ToList();
+                
+                List<string> AddObjectsPropertiesToGivenList(List<string> propertyNames, List<(string name, List<string> properties)> objectsProperties)
+                {
+                    int existingPropertiesCount;
+                    do
+                    {
+                        existingPropertiesCount = propertyNames.Count;
+
+                        foreach (var p in objectsProperties)
+                        {
+                            int index = propertyNames.FindIndex(n => n == p.name);
+
+                            if (index == -1) continue;
+
+                            var alreadyExistingProperties = propertyNames.Skip(index + 1).Take(p.properties.Count).ToList();
+
+                            if (alreadyExistingProperties?.Count != 0 && alreadyExistingProperties.TrueForAll(propName => p.properties.Contains(propName) || p.properties.TrueForAll(prop => propertyNames.Contains(prop)))) continue;
+
+                            propertyNames.InsertRange(index + 1, p.properties);
+                        }
+                    }
+                    while (existingPropertiesCount != propertyNames.Count);
+
+                    return propertyNames;
+                }
+
+                AddObjectsPropertiesToGivenList(listOfPropertyNames, convertedData.objects);
+
+
+
+
+
 
                 var list = propy.Select(p => p.Key).Distinct().ToList();
                 //var listOfObjectPropertiesWithoutArrays = listOfObjects.SelectMany(o => o.Value).Select(name => name).Where(name => !listOfArrays.Any(k => k.Key == name)).ToList();
@@ -553,7 +593,7 @@ namespace MyFunds.Controllers
                                 }
                 */
 
-                //header
+                /*//header
                 var headerRow = new Row();
                 foreach (var prop in arrayProp)//list)//props)
                 {
@@ -597,6 +637,68 @@ namespace MyFunds.Controllers
                                     foreach (JObject obj in jObjectList)
                                     {
                                         string value = Find(propName, obj.Properties().ToList());
+                                        if (value != "magicString")
+                                            return value;
+                                    }
+                                }
+                            }
+
+                            return "magicString";
+                        }
+
+                        row.AppendChild(
+                            GetCell(!(propValue == null || propValue == "magicString") ? propValue : string.Empty)
+                        );
+                    }
+                    sheetData.AppendChild(row);
+                }
+                wbPart.Workbook.Sheets.AppendChild(sheet);
+                wbPart.Workbook.Save();*/
+
+                //header
+                var headerRow = new Row();
+                foreach (var prop in listOfPropertyNames)//list)//props)
+                {
+                    headerRow.AppendChild(
+                        GetCell(prop)
+                    );
+                }
+                sheetData.AppendChild(headerRow);
+
+                //body
+                foreach (var record in convertedData.newData)
+                {
+                    var recordProperties = record.value;
+
+                    var row = new Row();
+                    foreach (var prop in listOfPropertyNames)//list)//props)
+                    {
+                        var propValue = Find(prop, recordProperties);
+
+                        string Find(string propName, List<(string name, object value)> properties)
+                        {
+                            foreach (var p in properties)
+                            {
+                                if (p.name == propName && p.value is string)
+                                    return p.value as string;
+                                if (p.name == propName && p.value is List<(string name, object value)>)
+                                    return "OBJECT";//string.Empty;
+                                if (p.name == propName && p.value is List<(string name, List<(string name, object value)> value)>)
+                                    return "ARRAY";//string.Empty;
+                                if (p.name != propName && p.value is List<(string name, object value)>)
+                                {
+                                    string value = Find(propName, p.value as List<(string name, object value)>);
+                                    if (value != "magicString")
+                                        return value;
+                                }
+                                if (p.name != propName && (p.value is List<(string name, List<(string name, object value)> value)>))
+                                {
+                                    var objectList = new List<List<(string name, object value)>>();
+                                    (p.value as List<(string name, List<(string name, object value)> value)>).ForEach(obj => objectList.Add(obj.value));
+
+                                    foreach (var obj in objectList)
+                                    {
+                                        string value = Find(propName, obj);
                                         if (value != "magicString")
                                             return value;
                                     }
