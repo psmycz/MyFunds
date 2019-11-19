@@ -68,10 +68,11 @@
             </summary>
             <response code="400">Unable to finish request due to an error</response>
         </member>
-        <member name="M:MyFunds.Controllers.AdminController.ExportExcel(System.String)">
+        <member name="M:MyFunds.Controllers.AdminController.ExportExcel(System.String,System.String)">
             <summary>
             Export excel from given json
             </summary>
+            <description>Need to pass valid json in request body</description>
             <response code="400">Unable to finish request due to an error</response>
         </member>
         <member name="F:MyFunds.ViewModels.FixedAssetRequest.type">
