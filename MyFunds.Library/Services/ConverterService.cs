@@ -43,7 +43,7 @@ namespace MyFunds.Library.Services
                     Name = sheetName
                 };
                 var workingSheet = ((WorksheetPart)wbPart.GetPartById(sheet.Id)).Worksheet;
-
+                
 
                 var convertedData = ConvertJsonObjectsToDictionaryStructure(data);
                 var listOfPropertyNames = convertedData.newData.SelectMany(r => r.value).Select(p => p.name).Distinct().ToList();

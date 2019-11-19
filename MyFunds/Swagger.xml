@@ -46,25 +46,25 @@
         </member>
         <member name="M:MyFunds.Controllers.AdminController.GetFixedAssetWithArchives(System.Int32)">
             <summary>
-            Get all users with their assets
+            Get all fixed assets with its archives
             </summary>
             <response code="400">Unable to finish request due to an error</response>
         </member>
         <member name="M:MyFunds.Controllers.AdminController.GetMobileAssetWithArchives(System.Int32)">
             <summary>
-            Get all users with their assets
+            Get all mobile assets with its archives
             </summary>
             <response code="400">Unable to finish request due to an error</response>
         </member>
         <member name="M:MyFunds.Controllers.AdminController.GetRoomWithAssets(System.Int32)">
             <summary>
-            Get all users with their assets
+            Get all rooms with its assets
             </summary>
             <response code="400">Unable to finish request due to an error</response>
         </member>
         <member name="M:MyFunds.Controllers.AdminController.GetBuildingWithAssets(System.Int32)">
             <summary>
-            Get all users with their assets
+            Get all building with its assets
             </summary>
             <response code="400">Unable to finish request due to an error</response>
         </member>
@@ -72,7 +72,152 @@
             <summary>
             Export excel from given json
             </summary>
-            <description>Need to pass valid json in request body</description>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetUser(System.Int32)">
+            <summary>
+            Get user with provided id
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetAllUsers">
+            <summary>
+            Get all users
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetFixedAsset(System.Int32)">
+            <summary>
+            Get fixed asset with provided id
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetAllFixedAssets(System.String,System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Boolean},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.String,System.String)">
+            <summary>
+            Get all fixed assets
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetMobileAsset(System.Int32)">
+            <summary>
+            Get mobile asset with provided id
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetAllMobileAssets(System.String,System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Boolean},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Get all mobile assets
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetMe">
+            <summary>
+            Get currently logged in user
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetMeWithAssets">
+            <summary>
+            Get currently logged in user with his assets
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetRoom(System.Int32)">
+            <summary>
+            Get room by provided id
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetAllRooms">
+            <summary>
+            Get all rooms
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetBuilding(System.Int32)">
+            <summary>
+            Get building by provided id
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetBuildingWithRooms(System.Int32)">
+            <summary>
+            Get building by provided id with all rooms inside it
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetAllBuildings">
+            <summary>
+            Get all buildings
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.GetAllBuildingsWithRooms">
+            <summary>
+            Get all buildings with its rooms
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+            <response code="404">Not found any data to return</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.AddFixedAsset(MyFunds.ViewModels.FixedAssetRequest)">
+            <summary>
+            Add new fixed asset
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.UpdateFixedAsset(MyFunds.ViewModels.FixedAssetRequest)">
+            <summary>
+            Update existing fixed asset
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.AddMobileAsset(MyFunds.ViewModels.MobileAssetRequest)">
+            <summary>
+            Add new mobile asset
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.UpdateMobileAsset(MyFunds.ViewModels.MobileAssetRequest)">
+            <summary>
+            Update existing mobile asset
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.AddRoom(MyFunds.ViewModels.RoomRequest)">
+            <summary>
+            Add new room
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.UpdateRoom(MyFunds.ViewModels.RoomRequest)">
+            <summary>
+            Update existing room
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.AddBuilding(MyFunds.ViewModels.BuildingRequest)">
+            <summary>
+            Add new building
+            </summary>
+            <response code="400">Unable to finish request due to an error</response>
+        </member>
+        <member name="M:MyFunds.Controllers.UserController.UpdateBuilding(MyFunds.ViewModels.BuildingRequest)">
+            <summary>
+            Update existing building
+            </summary>
             <response code="400">Unable to finish request due to an error</response>
         </member>
         <member name="F:MyFunds.ViewModels.FixedAssetRequest.type">

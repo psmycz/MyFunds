@@ -24,6 +24,7 @@ using MyFunds.Library.Exceptions;
 using MyFunds.Library.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Spire.Pdf;
 
 namespace MyFunds.Controllers
 {
@@ -132,6 +133,7 @@ namespace MyFunds.Controllers
         [Route("GetUserWithAssets/{userId}")]
         [ProducesResponseType(typeof(UserDTO), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetUserWithAssets(int userId)
         {
             return Ok(userService.GetUserWithAssets(userId));
@@ -145,6 +147,7 @@ namespace MyFunds.Controllers
         [Route("GetAllUsersWithAssets")]
         [ProducesResponseType(typeof(List<UserDTO>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetAllUsersWithAssets()
         {
             return Ok(userService.GetAllUsersWithAssets());
@@ -158,6 +161,7 @@ namespace MyFunds.Controllers
         [Route("GetFixedAssetWithArchives/{fixedAssetId}")]
         [ProducesResponseType(typeof(FixedAssetDTO), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetFixedAssetWithArchives(int fixedAssetId)
         {
             return Ok(fixedAssetService.GetFixedAssetWithArchives(fixedAssetId));
@@ -171,6 +175,7 @@ namespace MyFunds.Controllers
         [Route("GetMobileAssetWithArchives/{mobileAssetId}")]
         [ProducesResponseType(typeof(MobileAssetDTO), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetMobileAssetWithArchives(int mobileAssetId)
         {
             return Ok(mobileAssetService.GetMobileAssetWithArchives(mobileAssetId));
@@ -184,6 +189,7 @@ namespace MyFunds.Controllers
         [Route("GetRoomWithAssets/{roomId}")]
         [ProducesResponseType(typeof(RoomDTO), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetRoomWithAssets(int roomId)
         {
             return Ok(roomService.GetRoomWithAssets(roomId));
@@ -197,6 +203,7 @@ namespace MyFunds.Controllers
         [Route("GetBuildingWithAssets/{buildingId}")]
         [ProducesResponseType(typeof(BuildingDTO), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetBuildingWithAssets(int buildingId)
         {
             return Ok(buildingService.GetBuildingWithAssets(buildingId));
@@ -218,7 +225,7 @@ namespace MyFunds.Controllers
 
             var memoryStream = converterService.ConvertJsonToExcel(requestBody, sheetName);
 
-
+            
             HttpContext.Response.Headers["Content-Disposition"] =
                 new ContentDispositionHeaderValue("attachment")
                 {

@@ -49,30 +49,60 @@ namespace MyFunds.Controllers
         }
 
 
-
+        /// <summary>
+        /// Get user with provided id
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetUser/{userId}")]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetUser(int userId)
         {
             return Ok(userService.GetUser(userId));
         }
+        /// <summary>
+        /// Get all users
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetAllUsers")]
+        [ProducesResponseType(typeof(List<UserDTO>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetAllUsers()
         {
             return Ok(userService.GetAllUsers());
         }
-        
 
 
+        /// <summary>
+        /// Get fixed asset with provided id
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetFixedAsset/{fixedAssetId}")]
+        [ProducesResponseType(typeof(FixedAssetDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetFixedAsset(int fixedAssetId)
         {
             return Ok(fixedAssetService.GetFixedAsset(fixedAssetId));
         }
+        /// <summary>
+        /// Get all fixed assets
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetAllFixedAssets")]
+        [ProducesResponseType(typeof(List<FixedAssetDTO>), 200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetAllFixedAssets(string name, double? minPrice, double? maxPrice, bool? inUse, DateTime? maxPurchaseDate, DateTime? maxWarrantyEndDate, string fixedAssetType, string roomType)
         {
             var fixedAssets = fixedAssetService.GetAllFixedAssets();
@@ -120,15 +150,30 @@ namespace MyFunds.Controllers
             return Ok(fixedAssets);
         }
 
-
+        /// <summary>
+        /// Get mobile asset with provided id
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetMobileAsset/{mobileAssetId}")]
+        [ProducesResponseType(typeof(MobileAssetDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetMobileAsset(int mobileAssetId)
         {
             return Ok(mobileAssetService.GetMobileAsset(mobileAssetId));
         }
+        /// <summary>
+        /// Get all mobile assets
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetAllMobileAssets")]
+        [ProducesResponseType(typeof(List<MobileAssetDTO>), 200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetAllMobileAssets(string name, double? minPrice, double? maxPrice, bool? inUse, DateTime? maxPurchaseDate, DateTime? maxWarrantyEndDate)
         {
             var mobileAssets = mobileAssetService.GetAllMobileAssets();
@@ -148,9 +193,15 @@ namespace MyFunds.Controllers
             return Ok(mobileAssets);
         }
 
-
+        /// <summary>
+        /// Get currently logged in user
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetMe")]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
         public IActionResult GetMe()
         {
             var id = userManager.GetUserId(User);
@@ -163,8 +214,15 @@ namespace MyFunds.Controllers
 
             return Ok(user);
         }
+        /// <summary>
+        /// Get currently logged in user with his assets
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetMeWithAssets")]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
         public IActionResult GetMeWithAssets()
         {
             var id = userManager.GetUserId(User);
@@ -178,49 +236,100 @@ namespace MyFunds.Controllers
             return Ok(user);
         }
 
-
+        /// <summary>
+        /// Get room by provided id
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetRoom/{roomId}")]
+        [ProducesResponseType(typeof(RoomDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetRoom(int roomId)
         {
             return Ok(roomService.GetRoom(roomId));
         }
+        /// <summary>
+        /// Get all rooms
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetAllRooms")]
+        [ProducesResponseType(typeof(List<RoomDTO>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetAllRooms()
         {
             return Ok(roomService.GetAllRooms());
         }
 
-
+        /// <summary>
+        /// Get building by provided id
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetBuilding/{buildingId}")]
+        [ProducesResponseType(typeof(BuildingDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetBuilding(int buildingId)
         {
             return Ok(buildingService.GetBuilding(buildingId));
         }
+        /// <summary>
+        /// Get building by provided id with all rooms inside it
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetBuildingWithRooms/{buildingId}")]
+        [ProducesResponseType(typeof(BuildingDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetBuildingWithRooms(int buildingId)
         {
             return Ok(buildingService.GetBuildingWithRooms(buildingId));
         }
+        /// <summary>
+        /// Get all buildings
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetAllBuildings")]
+        [ProducesResponseType(typeof(List<BuildingDTO>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetAllBuildings()
         {
             return Ok(buildingService.GetAllBuildings());
         }
+        /// <summary>
+        /// Get all buildings with its rooms
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
+        /// <response code="404">Not found any data to return</response>
         [HttpGet]
         [Route("GetAllBuildingsWithRooms")]
+        [ProducesResponseType(typeof(List<BuildingDTO>), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(404)]
         public IActionResult GetAllBuildingsWithRooms()
         {
             return Ok(buildingService.GetAllBuildingsWithRooms());
         }
 
-
+        /// <summary>
+        /// Add new fixed asset
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpPost]
         [Route("AddFixedAsset")]
+        [ProducesResponseType(typeof(FixedAssetDTO), 201)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public IActionResult AddFixedAsset(FixedAssetRequest fixedAsset)
         {
             if (fixedAsset.Type == null)
@@ -267,8 +376,14 @@ namespace MyFunds.Controllers
             var link = linkGenerator.GetUriByAction(HttpContext, "GetFixedAsset", "User", values: new { fixedAssetId = newAsset.Id });
             return Created(link, newAsset);
         }
+        /// <summary>
+        /// Update existing fixed asset
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpPost]
         [Route("UpdateFixedAsset")]
+        [ProducesResponseType(typeof(FixedAssetDTO), 200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public IActionResult UpdateFixedAsset(FixedAssetRequest fixedAsset)
         {
             if (fixedAsset.Id == 0)
@@ -323,9 +438,14 @@ namespace MyFunds.Controllers
             return Ok(newAsset);
         }
 
-
+        /// <summary>
+        /// Add new mobile asset
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpPost]
         [Route("AddMobileAsset")]
+        [ProducesResponseType(typeof(MobileAssetDTO), 201)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public IActionResult AddMobileAsset(MobileAssetRequest mobileAsset)
         {
             if (mobileAsset.InUse && mobileAsset.UserId == null)
@@ -357,8 +477,14 @@ namespace MyFunds.Controllers
             var link = linkGenerator.GetUriByAction(HttpContext, "GetMobileAsset", "User", values: new { mobileAssetId = newAsset.Id });
             return Created(link, newAsset);
         }
+        /// <summary>
+        /// Update existing mobile asset
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpPost]
         [Route("UpdateMobileAsset")]
+        [ProducesResponseType(typeof(MobileAssetDTO), 200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public IActionResult UpdateMobileAsset(MobileAssetRequest mobileAsset)
         {
             if (mobileAsset.Id == 0)
@@ -398,9 +524,14 @@ namespace MyFunds.Controllers
             return Ok(newAsset);
         }
 
-
+        /// <summary>
+        /// Add new room
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpPost]
         [Route("AddRoom")]
+        [ProducesResponseType(typeof(RoomDTO), 201)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public IActionResult AddRoom(RoomRequest room)
         {
             if (room.Type == null)
@@ -422,8 +553,14 @@ namespace MyFunds.Controllers
             var link = linkGenerator.GetUriByAction(HttpContext, "GetRoom", "User", values: new { roomId = newRoom.Id });
             return Created(link, newRoom);
         }
+        /// <summary>
+        /// Update existing room
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpPost]
         [Route("UpdateRoom")]
+        [ProducesResponseType(typeof(RoomDTO), 200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public IActionResult UpdateRoom(RoomRequest room)
         {
             if (room.Id == 0)
@@ -454,9 +591,14 @@ namespace MyFunds.Controllers
             return Ok(newRoom);
         }
 
-
+        /// <summary>
+        /// Add new building
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpPost]
         [Route("AddBuilding")]
+        [ProducesResponseType(typeof(BuildingDTO), 201)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public IActionResult AddBuilding(BuildingRequest building)
         {
 
@@ -467,8 +609,14 @@ namespace MyFunds.Controllers
             var link = linkGenerator.GetUriByAction(HttpContext, "GetBuilding", "User", values: new { buildingId = newBuilding.Id });
             return Created(link, newBuilding);
         }
+        /// <summary>
+        /// Update existing building
+        /// </summary>
+        /// <response code="400">Unable to finish request due to an error</response>
         [HttpPost]
         [Route("UpdateBuilding")]
+        [ProducesResponseType(typeof(BuildingDTO), 200)]
+        [ProducesResponseType(typeof(Exceptions.ValidationProblemDetails), 400)]
         public IActionResult UpdateBuilding(BuildingRequest building)
         {
             if (building.Id == 0)
