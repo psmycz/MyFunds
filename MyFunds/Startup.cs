@@ -90,6 +90,14 @@ namespace MyFunds
                     };
                 });
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                });
+            });
+
 
             services.AddMvc(options =>
             {
@@ -180,6 +188,7 @@ namespace MyFunds
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors();
             app.UseExceptionHandler(errorApp =>
             {
                 errorApp.Run(context => 
