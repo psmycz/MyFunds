@@ -19,6 +19,9 @@
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.9.1" />
     <PackageReference Include="FreeSpire.XLS" Version="9.10.11" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
+    <PackageReference Include="jsreport.Binary" Version="2.6.1" />
+    <PackageReference Include="jsreport.Client" Version="3.0.1" />
+    <PackageReference Include="jsreport.Local" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />

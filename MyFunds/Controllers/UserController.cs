@@ -49,13 +49,6 @@ namespace MyFunds.Controllers
         }
 
 
-
-
-
-
-
-
-
         /// <summary>
         /// Get currently logged in user
         /// </summary>
@@ -77,6 +70,7 @@ namespace MyFunds.Controllers
 
             return Ok(user);
         }
+
         /// <summary>
         /// Get currently logged in user with his assets
         /// </summary>
@@ -98,9 +92,6 @@ namespace MyFunds.Controllers
 
             return Ok(user);
         }
-
-
-
 
 
     }

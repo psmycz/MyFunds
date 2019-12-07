@@ -11,6 +11,9 @@ using AutoMapper;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using jsreport.Binary;
+using jsreport.Local;
+using jsreport.Types;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -795,6 +798,83 @@ namespace MyFunds.Controllers
 
             return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName + ".xlsx");
         }
-    }
+
+        [HttpPost]
+        [Route("ExportPdf")]
+        public async Task<IActionResult> ExportPdf(string html)
+        {
+            var rs = new LocalReporting()
+                .UseBinary(JsReportBinary.GetBinary())
+                .Configure(cfg => cfg.AllowedLocalFilesAccess().FileSystemStore().BaseUrlAsWorkingDirectory())
+                .AsUtility()
+                .Create();
+
+            var report = await rs.RenderAsync(new RenderRequest
+            {
+                Template = new Template
+                {
+                    Recipe = Recipe.ChromePdf,
+                    Engine = Engine.None,
+                    Content = templatka
+                }
+            });
+
+            //
+            return File(report.Content, "application/pdf", "file.pdf");
+        }
+
+        const string templatka = 
+            "<style>"
+            + ".title {"
+            +   "font-size: 22px;"
+            +  "font-weight: 100;"
+            +   "padding: 10px 20px 0px 20px;" 
+            + "text-align: center;"
+            +  "}"
+            +     ".title span"
+            +"{"
+            + "color: #007cae;"
+            +  "}"
+            + ".details {"
+            +    "padding: 10px 20px 0px 20px;"
+            +    "text-align: left !important;"
+            + "}"
+            + "table{"
+            +   "width: 100%;"
+            +   "table-layout: fixed;"
+            +"}"
+            + "th {"
+            +    "background-color: rgb(95, 95, 95);"
+            +"color: white;"
+            +     "text-align: center;"
+            +     "opacity: 0.7;"
+            +  "}"
+            + "th, td{"
+            +     "border-bottom: 1px solid #ddd;"
+            + "}"
+            +  "tr:hover {"
+            +      "background-color: #f5f5f5;"
+            +  "}"
+            +   "tr:nth-child(even)"
+            +"{"
+            + "background - color: #f2f2f2;"
+            +       "}"
+            + "</style>"
+            + "<div class='wrapper'>"
+            +   "<div class='header' style='text-align: center'>"
+            +       "<p class='title'>Invoice # </p>"
+            + "</div>"
+            + "<div>"
+            +   "<div class='details'>"
+            +       "<p>Created by: <span style='font-weight: 600;'> Name </span></p>"
+            +       "<p>Date: <span style='font-weight: 600;'> Date </span></p>"
+            +       "<p>Description: <span>Text</span></p>"
+            +       "<hr style='opacity: 0.7;'/>"
+            +   "</div>"
+            +   "<div class='details'>"
+
+            +   "</div>"
+            + "</div>";
     
+    }
 }
