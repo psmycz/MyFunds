@@ -6,6 +6,7 @@ using MyFunds.Library.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MyFunds.Library.Services
@@ -54,24 +55,38 @@ namespace MyFunds.Library.Services
             return mapper.Map<List<UserDTO>>(users ?? throw new NoDataException("No registered users"));
         }
 
-        public UserDTO GetUser(int userId)
+        public UserDTO GetUser(int userId, ClaimsPrincipal loggedUser = null)
         {
             if (userId <= 0)
                 throw new ApiException("Incorrect Id");
 
             var user = userRepository.GetById(userId);
+
+            var userDTO =  user == null ? throw new NoDataException("No user with provided Id") : new UserDTO { Id = user.Id, Email = user.Email, UserName = user.UserName };
             
-            return user == null ? throw new NoDataException("No user with provided Id") : new UserDTO { Id = user.Id, Email = user.Email, UserName = user.UserName };
+            if (loggedUser != null)
+            {
+                userDTO.IsAdmin = loggedUser.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+            }
+
+            return userDTO;
         }
 
-        public UserDTO GetUserWithAssets(int userId)
+        public UserDTO GetUserWithAssets(int userId, ClaimsPrincipal loggedUser = null)
         {
             if (userId <= 0)
                 throw new ApiException("Incorrect Id");
 
             var user = userRepository.GetById(userId);
             
-            return user == null ? throw new NoDataException("No user with provided Id") : mapper.Map<UserDTO>(user);
+            var userDTO = user == null ? throw new NoDataException("No user with provided Id") : mapper.Map<UserDTO>(user);
+            
+            if(loggedUser != null)
+            {
+                userDTO.IsAdmin = loggedUser.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+            }
+
+            return userDTO;
         }
 
         
