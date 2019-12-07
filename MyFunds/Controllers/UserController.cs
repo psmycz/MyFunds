@@ -66,7 +66,7 @@ namespace MyFunds.Controllers
             if (!int.TryParse(id, out userId))
                 throw new ApiException("Incorrect user Id");
 
-            var user = userService.GetUser(userId, User);
+            var user = userService.GetMe(userId, User);
 
             return Ok(user);
         }
@@ -88,7 +88,7 @@ namespace MyFunds.Controllers
             if (!int.TryParse(id, out userId))
                 throw new ApiException("Incorrect user Id");
 
-            var user = userService.GetUserWithAssets(userId, User);
+            var user = userService.GetMeWithAssets(userId, User);
 
             return Ok(user);
         }

@@ -9,8 +9,10 @@ namespace MyFunds.Library.Interfaces
 {
     public interface IUserService : IBaseService<IUserService>
     {
-        UserDTO GetUser(int userId, ClaimsPrincipal loggedUser = null);
-        UserDTO GetUserWithAssets(int userId, ClaimsPrincipal loggedUser = null);
+        UserDTO GetUser(int userId);
+        UserDTO GetMe(int userId, ClaimsPrincipal loggedUser);
+        UserDTO GetUserWithAssets(int userId);
+        UserDTO GetMeWithAssets(int userId, ClaimsPrincipal loggedUser);
 
         bool UserExist(int userId);
         bool UserExist(string userName);

@@ -55,15 +55,20 @@ namespace MyFunds.Library.Services
             return mapper.Map<List<UserDTO>>(users ?? throw new NoDataException("No registered users"));
         }
 
-        public UserDTO GetUser(int userId, ClaimsPrincipal loggedUser = null)
+        public UserDTO GetUser(int userId)
         {
             if (userId <= 0)
                 throw new ApiException("Incorrect Id");
 
             var user = userRepository.GetById(userId);
 
-            var userDTO =  user == null ? throw new NoDataException("No user with provided Id") : new UserDTO { Id = user.Id, Email = user.Email, UserName = user.UserName };
-            
+            return user == null ? throw new NoDataException("No user with provided Id") : new UserDTO { Id = user.Id, Email = user.Email, UserName = user.UserName };
+        }
+
+        public UserDTO GetMe(int userId, ClaimsPrincipal loggedUser = null)
+        {
+            var userDTO = GetUser(userId);
+
             if (loggedUser != null)
             {
                 userDTO.IsAdmin = loggedUser.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
@@ -72,16 +77,21 @@ namespace MyFunds.Library.Services
             return userDTO;
         }
 
-        public UserDTO GetUserWithAssets(int userId, ClaimsPrincipal loggedUser = null)
+        public UserDTO GetUserWithAssets(int userId)
         {
             if (userId <= 0)
                 throw new ApiException("Incorrect Id");
 
             var user = userRepository.GetById(userId);
-            
-            var userDTO = user == null ? throw new NoDataException("No user with provided Id") : mapper.Map<UserDTO>(user);
-            
-            if(loggedUser != null)
+
+            return user == null ? throw new NoDataException("No user with provided Id") : mapper.Map<UserDTO>(user);
+        }
+
+        public UserDTO GetMeWithAssets(int userId, ClaimsPrincipal loggedUser = null)
+        {
+            var userDTO = GetUserWithAssets(userId);
+
+            if (loggedUser != null)
             {
                 userDTO.IsAdmin = loggedUser.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
             }
@@ -89,7 +99,6 @@ namespace MyFunds.Library.Services
             return userDTO;
         }
 
-        
 
 
     }
