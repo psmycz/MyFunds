@@ -65,12 +65,18 @@ namespace MyFunds.Library.Services
             return user == null ? throw new NoDataException("No user with provided Id") : new UserDTO { Id = user.Id, Email = user.Email, UserName = user.UserName };
         }
 
-        public UserDTO GetMe(int userId, ClaimsPrincipal loggedUser = null)
+        public UserDTO GetMe(int userId, ClaimsPrincipal loggedUser)
         {
+            if (loggedUser == null)
+                throw new ApiException("Logged user claims are unaccessible");
+
             var userDTO = GetUser(userId);
 
             if (loggedUser != null)
             {
+                if(!loggedUser.Claims.Any(c => c.Type == ClaimTypes.Role))
+                    throw new ApiException("Logged user does not have any role specified");
+
                 userDTO.IsAdmin = loggedUser.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
             }
 
@@ -87,12 +93,18 @@ namespace MyFunds.Library.Services
             return user == null ? throw new NoDataException("No user with provided Id") : mapper.Map<UserDTO>(user);
         }
 
-        public UserDTO GetMeWithAssets(int userId, ClaimsPrincipal loggedUser = null)
+        public UserDTO GetMeWithAssets(int userId, ClaimsPrincipal loggedUser)
         {
+            if (loggedUser == null)
+                throw new ApiException("Logged user claims are unaccessible");
+
             var userDTO = GetUserWithAssets(userId);
 
             if (loggedUser != null)
             {
+                if (!loggedUser.Claims.Any(c => c.Type == ClaimTypes.Role))
+                    throw new ApiException("Logged user does not have any role specified");
+
                 userDTO.IsAdmin = loggedUser.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
             }
 
